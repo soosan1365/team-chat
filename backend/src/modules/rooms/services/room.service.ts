@@ -12,3 +12,8 @@ export async function createDefaultRooms() {
 
   console.log("Default rooms are ready");
 }
+export async function getRooms() {
+  return prisma.room.findMany({
+    orderBy: { name: "asc" },
+  });
+}

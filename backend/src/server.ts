@@ -4,7 +4,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import app from "./app.js";
 import { createDefaultRooms } from "./modules/rooms/services/room.service.js";
-
+import { setMessageSocket } from "./modules/messages/services/message.socket.js";
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
@@ -12,6 +12,7 @@ const io = new Server(httpServer, {
     origin: "http://localhost:3000",
   },
 });
+setMessageSocket(io);
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -19,6 +20,17 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
+  
+socket.on("join-room", (roomId: string) => {
+  socket.join(roomId);
+  console.log(`Socket ${socket.id} joined room ${roomId}`);
+});
+
+socket.on("leave-room", (roomId: string) => {
+  socket.leave(roomId);
+  console.log(`Socket ${socket.id} left room ${roomId}`);
+});
+
 });
 
 async function startServer() {
