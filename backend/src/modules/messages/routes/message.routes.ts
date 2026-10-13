@@ -1,4 +1,4 @@
-
+// تعیین آدرس‌های API برای دریافت و ارسال پیام
 import { Router } from "express";
 import { getRoomMessagesController } from "../controllers/message.controller.js";
 import { createMessageController } from "../controllers/message.controller.js";

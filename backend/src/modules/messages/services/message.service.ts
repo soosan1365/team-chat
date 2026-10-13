@@ -1,4 +1,4 @@
-
+//ذخیره پیام در دیتابیس و گرفتن پیام‌های قبلی
 import { prisma } from "../../../lib/prisma.js";
 
 export async function getRoomMessages(roomId: string) {

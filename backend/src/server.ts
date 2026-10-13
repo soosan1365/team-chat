@@ -6,7 +6,7 @@ import app from "./app.js";
 import { createDefaultRooms } from "./modules/rooms/services/room.service.js";
 import { setMessageSocket } from "./modules/messages/services/message.socket.js";
 const httpServer = createServer(app);
-
+//ساخت سرور Socket.IO و مدیریت اتصال و ورود و خروج کاربران از اتاق‌ها
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",

@@ -1,4 +1,4 @@
-
+//نگهداری اتصال Socket.IO و تعریف تابع ارسال پیام به اعضای اتاق
 import type { Server } from "socket.io";
 
 let io: Server | null = null;

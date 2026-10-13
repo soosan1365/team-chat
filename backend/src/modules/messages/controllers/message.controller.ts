@@ -1,4 +1,4 @@
-
+//مدیریت درخواست؛ اول ذخیره پیام را صدا می‌زند، بعد تابع ارسال Socket را فراخوانی می‌کند
 import type { Request, Response } from "express";
 import { getRoomMessages } from "../services/message.service.js";
 import { createMessage } from "../services/message.service.js";
@@ -50,7 +50,8 @@ export async function createMessageController(
       userId: userId.trim(),
       roomId,
     });
-emitNewMessage(roomId, message);
+    //تابعی که رویداد Socket.IO را ارسال می‌کند.
+    emitNewMessage(roomId, message);
     res.status(201).json(message);
   } catch (error) {
     console.error("Failed to create message:", error);
