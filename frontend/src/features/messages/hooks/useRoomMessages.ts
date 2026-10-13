@@ -1,3 +1,4 @@
+//با TanStack Query دریافت و cache پیام‌ها رو مدیریت می‌کنه.
 import { getRoomMessages } from "../../../services/message.service";
 
 import { useQuery } from "@tanstack/react-query";

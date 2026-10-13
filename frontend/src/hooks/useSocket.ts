@@ -1,6 +1,4 @@
-//اتصال به سرور رو برقرار می‌کنه، وارد اتاق می‌شه، پیام‌های جدید
-//  رو دریافت و نگهداری می‌کنه و هنگام خروج، شنونده پیام و اتصال رو پاک می‌کنه.
-
+//به اتاق وصل می‌شه و پیام‌های جدید رو با Socket.IO دریافت می‌کنه.
 "use client";
 
 import { useEffect } from "react";
@@ -36,7 +34,7 @@ export function useSocket(roomId: string) {
           }
 
           return [...oldMessages, newMessage];
-        }
+        },
       );
     };
 
