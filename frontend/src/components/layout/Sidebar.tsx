@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useRooms } from "@/src/features/rooms/hooks/useRooms";
 
 type SidebarProps = {
-  selectedId: string | null;
-  onSelectChat: (roomId: string) => void;
+  selectedRoomId: string | null;
+  onSelectRoom: (roomId: string) => void;
 };
-
-export default function Sidebar({ selectedId, onSelectChat }: SidebarProps) {
+export default function Sidebar({ selectedRoomId, onSelectRoom }: SidebarProps) {
   const { data: rooms, isLoading, isError } = useRooms();
 
   return (
@@ -46,12 +45,12 @@ export default function Sidebar({ selectedId, onSelectChat }: SidebarProps) {
         )}
 
         {rooms?.map((room) => {
-          const isSelected = selectedId === room.id;
+          const isSelected = selectedRoomId === room.id;
 
           return (
             <button
               key={room.id}
-              onClick={() => onSelectChat(room.id)}
+              onClick={() => onSelectRoom(room.id)}
               className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${
                 isSelected
                   ? "bg-violet-500/10 ring-1 ring-violet-500/20"

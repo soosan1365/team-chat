@@ -1,7 +1,19 @@
 //قط مسئول گرفتن تاریخچه پیام‌ها از بک‌اند
 const API_URL = "http://localhost:4000/api";
-
-export async function getRoomMessages(roomId: string) {
+export type Message = {
+  id: string;
+  content: string;
+  userId: string;
+  roomId: string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string | null;
+  };
+};
+export async function getRoomMessages(
+  roomId: string
+): Promise<Message[]> {
   const response = await fetch(
     `${API_URL}/rooms/${roomId}/messages`
   );
@@ -10,7 +22,7 @@ export async function getRoomMessages(roomId: string) {
     throw new Error("Failed to fetch messages");
   }
 
-  return response.json();
+  return response.json() as Promise<Message[]>;
 }
 
 export type CreateMessageInput = {

@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { useRooms } from "@/src/features/rooms/hooks/useRooms";
 
 type ChatHeaderProps = {
-  selectedId: string;
+  roomId: string;
 };
 
-export default function ChatHeader({ selectedId }: ChatHeaderProps) {
+export default function ChatHeader({ roomId }: ChatHeaderProps) {
   const { data: rooms } = useRooms();
-  const room = rooms?.find((item) => item.id === selectedId);
+  const room = rooms?.find((item) => item.id === roomId);
 
   return (
     <header className="flex h-20 items-center justify-between border-b border-white/10 bg-[#111318] px-6">

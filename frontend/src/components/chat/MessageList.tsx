@@ -7,12 +7,12 @@ import { useSocket } from "@/src/hooks/useSocket";
 
 type MessageListProps = {
   roomId: string;
-  currentUserId: string;
+  userId: string;
 };
 
 export default function MessageList({
   roomId,
-  currentUserId,
+  userId,
 }: MessageListProps) {
   const { data: messages, isLoading, isError } = useRoomMessages(roomId);
 
@@ -37,7 +37,7 @@ export default function MessageList({
   return (
     <div className="flex-1 space-y-6 overflow-y-auto bg-[#0B0D12] p-6">
       {messages?.map((message) => {
-        const isMe = message.userId === currentUserId;
+        const isMe = message.userId === userId;
 
         return (
           <div
