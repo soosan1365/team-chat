@@ -22,6 +22,8 @@ type CreateMessageInput = {
   content: string;
   userId: string;
   roomId: string;
+  type?: string;
+  audioUrl?: string | null;
 };
 
 export async function createMessage(input: CreateMessageInput) {
@@ -30,6 +32,8 @@ export async function createMessage(input: CreateMessageInput) {
       content: input.content,
       userId: input.userId,
       roomId: input.roomId,
+      type: input.type ?? "text",
+      audioUrl: input.audioUrl ?? null,
     },
     include: {
       user: {

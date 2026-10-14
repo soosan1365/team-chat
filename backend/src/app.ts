@@ -5,6 +5,7 @@ import { prisma } from "./lib/prisma.js";
 import roomRoutes from "./modules/rooms/routes/room.routes.js";
 import messageRoutes from "./modules/messages/routes/message.routes.js";
 import authRoutes from "./modules/auth/routes/auth.routes.js";
+import path from "node:path";
 const app = express();
 
 app.use(cors({ origin: "http://localhost:3000" }));
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use("/api/rooms", roomRoutes);
 app.use("/api", messageRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/uploads", express.static(path.resolve("uploads")));
 app.get("/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;

@@ -52,4 +52,6 @@ model Message {
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId, createdAt])
+    type      String   @default("text")
+  audioUrl  String?
 }

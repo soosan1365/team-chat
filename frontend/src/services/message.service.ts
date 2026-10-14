@@ -10,6 +10,8 @@ export type Message = {
     id: string;
     name: string | null;
   };
+  type: string;
+audioUrl: string | null;
 };
 export async function getRoomMessages(
   roomId: string

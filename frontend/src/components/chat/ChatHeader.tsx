@@ -33,18 +33,11 @@ export default function ChatHeader({ roomId }: ChatHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" aria-label="Search messages" className="text-gray-400 hover:bg-white/10 hover:text-white">
-          <Search className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="Voice call" className="text-gray-400 hover:bg-white/10 hover:text-white">
-          <Phone className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="Video call" className="text-gray-400 hover:bg-white/10 hover:text-white">
-          <Video className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="More options" className="text-gray-400 hover:bg-white/10 hover:text-white">
+       
+      
+        {/* <Button variant="ghost" size="icon" aria-label="More options" className="text-gray-400 hover:bg-white/10 hover:text-white">
           <MoreVertical className="h-5 w-5" />
-        </Button>
+        </Button> */}
       </div>
     </header>
   );

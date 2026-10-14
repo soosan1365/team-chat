@@ -36,14 +36,6 @@ export default function Sidebar({
             Stay connected with your team
           </p>
         </div>
-
-        <Button
-          size="icon"
-          className="rounded-xl bg-violet-600 text-white hover:bg-violet-500"
-          aria-label="New conversation"
-        >
-          <Plus className="h-5 w-5" />
-        </Button>
       </div>
 
       {/* Rooms List */}
