@@ -17,3 +17,22 @@ export async function getRooms() {
     orderBy: { name: "asc" },
   });
 }
+
+export async function isUserRoomMember(
+  userId: string,
+  roomId: string,
+) {
+  const membership = await prisma.roomMember.findUnique({
+    where: {
+      userId_roomId: {
+        userId,
+        roomId,
+      },
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  return membership !== null;
+}

@@ -7,10 +7,9 @@ import { Input } from "@/components/ui/input";
 import { createMessage } from "@/src/services/message.service";
 type MessageInputProps = {
   roomId: string;
-  userId: string;
 };
 
-export default function MessageInput({ roomId, userId }: MessageInputProps) {
+export default function MessageInput({ roomId }: MessageInputProps) {
   const [message, setMessage] = useState("");
 
   async function handleSend() {
@@ -21,7 +20,7 @@ export default function MessageInput({ roomId, userId }: MessageInputProps) {
       await createMessage({
         content,
         roomId,
-        userId,
+        
       });
 
       setMessage("");

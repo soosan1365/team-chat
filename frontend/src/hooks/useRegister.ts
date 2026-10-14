@@ -1,0 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
+import { registerUser } from "@/src/services/auth.service";
+
+export function useRegister() {
+  return useMutation({
+    mutationFn: registerUser,
+  });
+}

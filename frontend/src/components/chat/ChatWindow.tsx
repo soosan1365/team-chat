@@ -27,7 +27,7 @@ export default function ChatWindow({
     <section className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0B0D12]">
       <ChatHeader roomId={selectedRoomId} />
       <MessageList roomId={selectedRoomId} userId={currentUserId} />
-      <MessageInput roomId={selectedRoomId} userId={currentUserId} />
+      <MessageInput roomId={selectedRoomId}  />
     </section>
   );
 }

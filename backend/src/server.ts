@@ -5,6 +5,8 @@ import { Server } from "socket.io";
 import app from "./app.js";
 import { createDefaultRooms } from "./modules/rooms/services/room.service.js";
 import { setMessageSocket } from "./modules/messages/services/message.socket.js";
+import jwt from "jsonwebtoken";
+import { isUserRoomMember } from "./modules/rooms/services/room.service.js";
 const httpServer = createServer(app);
 //ساخت سرور Socket.IO و مدیریت اتصال و ورود و خروج کاربران از اتاق‌ها
 const io = new Server(httpServer, {
@@ -14,6 +16,31 @@ const io = new Server(httpServer, {
 });
 setMessageSocket(io);
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  const secret = process.env.JWT_SECRET;
+
+  if (typeof token !== "string" || !secret) {
+    return next(new Error("Authentication required"));
+  }
+
+  try {
+    const payload = jwt.verify(token, secret);
+
+    if (
+      typeof payload === "string" ||
+      typeof payload.userId !== "string"
+    ) {
+      return next(new Error("Invalid token"));
+    }
+
+    socket.data.userId = payload.userId;
+    next();
+  } catch {
+    next(new Error("Invalid or expired token"));
+  }
+});
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
@@ -21,11 +48,29 @@ io.on("connection", (socket) => {
     console.log("User disconnected:", socket.id);
   });
   
-socket.on("join-room", (roomId: string) => {
-  socket.join(roomId);
-  console.log(`Socket ${socket.id} joined room ${roomId}`);
-});
+socket.on("join-room", async (roomId: string) => {
+  if (typeof roomId !== "string" || !roomId.trim()) {
+    return;
+  }
 
+  try {
+    const userId = socket.data.userId as string;
+
+    const isMember = await isUserRoomMember(userId, roomId);
+
+    if (!isMember) {
+      socket.emit("room-error", "You are not a member of this room");
+      return;
+    }
+
+    await socket.join(roomId);
+
+    console.log(`User ${userId} joined room ${roomId}`);
+  } catch (error) {
+    console.error("Failed to join room:", error);
+    socket.emit("room-error", "Could not join room");
+  }
+});
 socket.on("leave-room", (roomId: string) => {
   socket.leave(roomId);
   console.log(`Socket ${socket.id} left room ${roomId}`);

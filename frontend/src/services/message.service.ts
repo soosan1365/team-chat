@@ -27,21 +27,26 @@ export async function getRoomMessages(
 
 export type CreateMessageInput = {
   content: string;
-  userId: string;
   roomId: string;
 };
 
 export async function createMessage(input: CreateMessageInput) {
+  const token = localStorage.getItem("auth-token");
+
+  if (!token) {
+    throw new Error("Please log in to send messages");
+  }
+
   const response = await fetch(
     `${API_URL}/rooms/${input.roomId}/messages`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         content: input.content,
-        userId: input.userId,
       }),
     },
   );
@@ -52,3 +57,4 @@ export async function createMessage(input: CreateMessageInput) {
 
   return response.json();
 }
+
