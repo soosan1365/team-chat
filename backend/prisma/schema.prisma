@@ -19,6 +19,7 @@ model User {
   messages  Message[]
   rooms     RoomMember[]
   createdAt DateTime     @default(now())
+  passwordHash String?
 }
 
 model Room {
