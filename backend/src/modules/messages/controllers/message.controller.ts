@@ -3,15 +3,32 @@ import type { Request, Response } from "express";
 import { getRoomMessages } from "../services/message.service.js";
 import { createMessage } from "../services/message.service.js";
 import { emitNewMessage } from "../services/message.socket.js";
-
+import { isUserRoomMember } from "../../rooms/services/room.service.js";
 export async function getRoomMessagesController(
   req: Request<{ roomId: string }>,
   res: Response,
 ) {
   try {
     const { roomId } = req.params;
-    const messages = await getRoomMessages(roomId);
+    const userId = req.userId;
 
+    if (!userId) {
+      res.status(401).json({
+        message: "Authentication required",
+      });
+      return;
+    }
+
+    const isMember = await isUserRoomMember(userId, roomId);
+
+    if (!isMember) {
+      res.status(403).json({
+        message: "Access denied to this room",
+      });
+      return;
+    }
+
+    const messages = await getRoomMessages(roomId);
     res.json(messages);
   } catch (error) {
     console.error("Failed to fetch room messages:", error);
@@ -22,16 +39,23 @@ export async function getRoomMessagesController(
   }
 }
 
-
 export async function createMessageController(
   req: Request<{ roomId: string }, unknown, { content: string }>,
   res: Response,
 ) {
+
   try {
  const { roomId } = req.params;
 const { content } = req.body;
 const userId = req.userId;
+const isMember = await isUserRoomMember(userId ?? "", roomId);
 
+if (!isMember) {
+  res.status(403).json({
+    message: "Access denied to this room",
+  });
+  return;
+}
     if (
       typeof content !== "string" ||
       !content.trim() ||

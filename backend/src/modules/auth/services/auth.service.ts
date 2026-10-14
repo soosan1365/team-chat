@@ -34,24 +34,6 @@ export async function registerUser(input: RegisterInput) {
     },
   });
 
-const rooms = await prisma.room.findMany({
-  where: {
-    name: {
-      in: ["General", "Development"],
-    },
-  },
-  select: {
-    id: true,
-  },
-});
-
-await prisma.roomMember.createMany({
-  data: rooms.map((room) => ({
-    userId: user.id,
-    roomId: room.id,
-  })),
-  skipDuplicates: true,
-});
 
   return user;
 }

@@ -24,14 +24,9 @@ export async function isUserRoomMember(
 ) {
   const membership = await prisma.roomMember.findUnique({
     where: {
-      userId_roomId: {
-        userId,
-        roomId,
-      },
+      userId_roomId: { userId, roomId },
     },
-    select: {
-      userId: true,
-    },
+    select: { userId: true },
   });
 
   return membership !== null;

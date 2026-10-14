@@ -14,8 +14,19 @@ export type Message = {
 export async function getRoomMessages(
   roomId: string
 ): Promise<Message[]> {
+  const token = localStorage.getItem("auth-token");
+
+  if (!token) {
+    throw new Error("Please log in to view messages");
+  }
+
   const response = await fetch(
-    `${API_URL}/rooms/${roomId}/messages`
+    `${API_URL}/rooms/${roomId}/messages`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   if (!response.ok) {

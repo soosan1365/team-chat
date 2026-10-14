@@ -22,7 +22,10 @@ export function authenticateToken(
 
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-
+console.log("AUTH CHECK:", {
+  hasAuthHeader: Boolean(authHeader),
+  hasToken: Boolean(token),
+});
   if (!token) {
     res.status(401).json({ message: "Authentication required" });
     return;
