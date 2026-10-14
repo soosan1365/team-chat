@@ -21,8 +21,9 @@ export function authenticateToken(
   }
 
   const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-console.log("AUTH CHECK:", {
+const token = authHeader?.startsWith("Bearer ")
+  ? authHeader.slice(7).trim()
+  : null;console.log("AUTH CHECK:", {
   hasAuthHeader: Boolean(authHeader),
   hasToken: Boolean(token),
 });
@@ -41,7 +42,10 @@ console.log("AUTH CHECK:", {
 
     req.userId = payload.userId;
     next();
-  } catch {
-    res.status(401).json({ message: "Invalid or expired token" });
-  }
+} catch (error) {
+  console.error("JWT ERROR:", error);
+  res.status(401).json({
+    message: "Invalid or expired token",
+  });
+}
 }

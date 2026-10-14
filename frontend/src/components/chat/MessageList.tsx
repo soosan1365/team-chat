@@ -10,11 +10,8 @@ type MessageListProps = {
   userId: string;
 };
 
-export default function MessageList({
-  roomId,
-  userId,
-}: MessageListProps) {
-  const { data: messages, isLoading, isError } = useRoomMessages(roomId);
+export default function MessageList({ roomId, userId }: MessageListProps) {
+  const { data: messages, isLoading, isError, error } = useRoomMessages(roomId);
 
   useSocket(roomId);
 

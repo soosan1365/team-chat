@@ -5,7 +5,12 @@ import { createMessageController } from "../controllers/message.controller.js";
 import { authenticateToken } from "../../../middlewares/auth.middleware.js";
 const router = Router();
 
-router.get("/rooms/:roomId/messages", getRoomMessagesController);router.post(
+router.get(
+  "/rooms/:roomId/messages",
+  authenticateToken,
+  getRoomMessagesController,
+);
+router.post(
   "/rooms/:roomId/messages",
   authenticateToken,
   createMessageController,
