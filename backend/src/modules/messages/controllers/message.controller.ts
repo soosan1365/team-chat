@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { getRoomMessages } from "../services/message.service.js";
 import { createMessage } from "../services/message.service.js";
 import { emitNewMessage } from "../services/message.socket.js";
+
 export async function getRoomMessagesController(
   req: Request<{ roomId: string }>,
   res: Response,
@@ -21,17 +22,15 @@ export async function getRoomMessagesController(
   }
 }
 
+
 export async function createMessageController(
-  req: Request<
-    { roomId: string },
-    unknown,
-    { content: string; userId: string }
-  >,
+  req: Request<{ roomId: string }, unknown, { content: string }>,
   res: Response,
 ) {
   try {
-    const { roomId } = req.params;
-    const { content, userId } = req.body;
+ const { roomId } = req.params;
+const { content } = req.body;
+const userId = req.userId;
 
     if (
       typeof content !== "string" ||

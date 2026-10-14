@@ -1,6 +1,7 @@
 
 import type { Request, Response } from "express";
 import { registerUser } from "../services/auth.service.js";
+import { loginUser } from "../services/auth.service.js";
 
 export async function registerController(
   req: Request,
@@ -41,5 +42,47 @@ export async function registerController(
 
     console.error("Registration failed:", error);
     res.status(500).json({ message: "Registration failed" });
+  }
+}
+
+
+export async function loginController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email, password } = req.body;
+
+    if (
+      typeof email !== "string" ||
+      !email.trim() ||
+      typeof password !== "string" ||
+      !password
+    ) {
+      res.status(400).json({
+        message: "Email and password are required",
+      });
+      return;
+    }
+
+    const result = await loginUser({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    res.json(result);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_CREDENTIALS"
+    ) {
+      res.status(401).json({
+        message: "Invalid email or password",
+      });
+      return;
+    }
+
+    console.error("Login failed:", error);
+    res.status(500).json({ message: "Login failed" });
   }
 }
