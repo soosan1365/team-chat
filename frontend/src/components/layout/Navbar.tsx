@@ -1,41 +1,26 @@
-
 "use client";
-
-import { useEffect, useState } from "react";
-import { Bell, Search, MessageCircle, LogOut } from "lucide-react";
+import { useCurrentUser } from "@/src/hooks/useCurrentUse";
+import { useLogout } from "@/src/hooks/useLogout";
 import { useRouter } from "next/navigation";
-
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-};
-
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Bell, Search, MessageCircle, LogOut } from "lucide-react";
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("auth-user");
+  const { data, isPending } = useCurrentUser();
+  const logout = useLogout();
 
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser) as AuthUser);
-      } catch {
-        localStorage.removeItem("auth-user");
-      }
+  const user = data?.user ?? null;
+  console.log("User exists:", !!user);
+  async function handleLogout() {
+    try {
+      await logout.mutateAsync();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-  }, []);
-
-  function handleLogout() {
-    localStorage.removeItem("auth-token");
-    localStorage.removeItem("auth-user");
-    setUser(null);
-    router.push("/login");
   }
 
   const initials =
@@ -45,7 +30,7 @@ export default function Navbar() {
       .join("")
       .slice(0, 2)
       .toUpperCase() || "U";
-
+  console.log("Logout pending:", logout.isPending);
   return (
     <header className="flex h-16 items-center justify-between border-b border-white/10 bg-[#111318] px-6">
       <div className="flex items-center gap-3">
@@ -80,7 +65,9 @@ export default function Navbar() {
 
         <div className="h-8 w-px bg-white/10" />
 
-        {user ? (
+        {isPending ? (
+          <span className="text-sm text-gray-400">Loading...</span>
+        ) : user ? (
           <>
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
@@ -90,9 +77,7 @@ export default function Navbar() {
               </Avatar>
 
               <div className="hidden text-left sm:block">
-                <p className="text-sm font-medium text-white">
-                  {user.name}
-                </p>
+                <p className="text-sm font-medium text-white">{user.name}</p>
                 <p className="max-w-36 truncate text-xs text-gray-400">
                   {user.email}
                 </p>
@@ -100,14 +85,14 @@ export default function Navbar() {
             </div>
 
             <Button
-              variant="ghost"
-              size="icon"
+              type="button"
               onClick={handleLogout}
-              aria-label="Log out"
-              title="Log out"
-              className="text-gray-400 hover:bg-white/10 hover:text-white"
+              disabled={logout.isPending}
+              variant="outline"
+              className="flex items-center gap-2 border-violet-500/50 bg-violet-500/5 text-violet-300 transition-colors hover:border-violet-400 hover:bg-violet-500/15 hover:text-violet-200"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut size={16} />
+              {logout.isPending ? "Logging out..." : "Log out"}
             </Button>
           </>
         ) : (

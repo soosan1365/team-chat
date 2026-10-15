@@ -1,4 +1,3 @@
-
 export type RoomMember = {
   userId: string;
   roomId: string;

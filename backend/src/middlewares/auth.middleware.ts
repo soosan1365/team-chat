@@ -10,42 +10,45 @@ declare global {
     }
   }
 }
+
 export function authenticateToken(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   if (!JWT_SECRET) {
-    res.status(500).json({ message: "Authentication is not configured" });
+    res.status(500).json({
+      message: "Authentication is not configured",
+    });
     return;
   }
 
-  const authHeader = req.headers.authorization;
-const token = authHeader?.startsWith("Bearer ")
-  ? authHeader.slice(7).trim()
-  : null;console.log("AUTH CHECK:", {
-  hasAuthHeader: Boolean(authHeader),
-  hasToken: Boolean(token),
-});
+  const token = req.cookies?.accessToken;
+
   if (!token) {
-    res.status(401).json({ message: "Authentication required" });
+    res.status(401).json({
+      message: "Authentication required",
+    });
     return;
   }
 
   try {
     const payload = jwt.verify(token, JWT_SECRET);
 
-    if (typeof payload === "string" || typeof payload.userId !== "string") {
+    if (
+      typeof payload === "string" ||
+      typeof payload.userId !== "string"
+    ) {
       res.status(401).json({ message: "Invalid token" });
       return;
     }
 
     req.userId = payload.userId;
     next();
-} catch (error) {
-  console.error("JWT ERROR:", error);
-  res.status(401).json({
-    message: "Invalid or expired token",
-  });
+  } catch {
+    res.status(401).json({
+      message: "Invalid or expired token",
+    });
+  }
 }
-}
+

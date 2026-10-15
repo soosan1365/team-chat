@@ -1,5 +1,6 @@
-//قط مسئول گرفتن تاریخچه پیام‌ها از بک‌اند
-const API_URL = "http://localhost:4000/api";
+// مسئول گرفتن تاریخچه پیام‌ها و ارسال پیام به بک‌اند
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+
 export type Message = {
   id: string;
   content: string;
@@ -11,31 +12,26 @@ export type Message = {
     name: string | null;
   };
   type: string;
-audioUrl: string | null;
+  audioUrl: string | null;
 };
-export async function getRoomMessages(
-  roomId: string
-): Promise<Message[]> {
-  const token = localStorage.getItem("auth-token");
 
-  if (!token) {
-    throw new Error("Please log in to view messages");
-  }
-
-  const response = await fetch(
-    `${API_URL}/rooms/${roomId}/messages`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+async function parseResponse<T>(response: Response): Promise<T> {
+  const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch messages");
+    throw new Error(data?.message ?? "Request failed");
   }
 
-  return response.json() as Promise<Message[]>;
+  return data as T;
+}
+
+export async function getRoomMessages(roomId: string): Promise<Message[]> {
+  const response = await fetch(`${API_URL}/rooms/${roomId}/messages`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  return parseResponse<Message[]>(response);
 }
 
 export type CreateMessageInput = {
@@ -44,30 +40,16 @@ export type CreateMessageInput = {
 };
 
 export async function createMessage(input: CreateMessageInput) {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("Please log in to send messages");
-  }
-
-  const response = await fetch(
-    `${API_URL}/rooms/${input.roomId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        content: input.content,
-      }),
+  const response = await fetch(`${API_URL}/rooms/${input.roomId}/messages`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({
+      content: input.content,
+    }),
+  });
 
-  if (!response.ok) {
-    throw new Error("Failed to send message");
-  }
-
-  return response.json();
+  return parseResponse<Message>(response);
 }
-

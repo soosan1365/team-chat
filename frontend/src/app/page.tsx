@@ -1,32 +1,28 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ChatWindow from "../components/chat/ChatWindow";
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
-
-type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-};
+import { useCurrentUser } from "../hooks/useCurrentUse";
 
 export default function Home() {
+  const router = useRouter();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const { data, isPending } = useCurrentUser();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("auth-user");
+  const currentUser = data?.user ?? null;
 
-    if (storedUser) {
-      try {
-        setCurrentUser(JSON.parse(storedUser) as AuthUser);
-      } catch {
-        localStorage.removeItem("auth-user");
-      }
+  function handleSelectRoom(roomId: string) {
+    if (!currentUser) {
+      router.push("/login");
+      return;
     }
-  }, []);
+
+    setSelectedRoomId(roomId);
+  }
 
   return (
     <main className="flex h-screen flex-col overflow-hidden bg-[#0B0D12] p-3 md:p-4">
@@ -35,11 +31,15 @@ export default function Home() {
       <div className="mt-4 flex min-h-0 flex-1 overflow-hidden rounded-2xl">
         <Sidebar
           selectedRoomId={selectedRoomId}
-          onSelectRoom={setSelectedRoomId}
+          onSelectRoom={handleSelectRoom}
         />
 
         <div className="hidden min-h-0 min-w-0 flex-1 md:flex">
-          {currentUser ? (
+          {isPending ? (
+            <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
+              Checking your session...
+            </div>
+          ) : currentUser ? (
             <ChatWindow
               selectedRoomId={selectedRoomId}
               currentUserId={currentUser.id}

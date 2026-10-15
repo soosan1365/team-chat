@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -24,15 +23,13 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const result = await loginMutation.mutateAsync({
+      await loginMutation.mutateAsync({
         email,
         password,
       });
 
-      localStorage.setItem("auth-token", result.token);
-      localStorage.setItem("auth-user", JSON.stringify(result.user));
-
       router.push("/");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     }

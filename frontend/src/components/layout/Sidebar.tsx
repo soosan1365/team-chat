@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useRooms } from "@/src/features/rooms/hooks/useRooms";
+import { useRooms } from "@/src/hooks/useRooms";
 import { useJoinRoom } from "@/src/hooks/useJoinRoom";
 
 type SidebarProps = {

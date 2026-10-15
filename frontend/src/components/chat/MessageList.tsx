@@ -2,7 +2,7 @@
 
 import { CheckCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useRoomMessages } from "@/src/features/messages/hooks/useRoomMessages";
+import { useRoomMessages } from "@/src/hooks/useRoomMessages";
 import { useSocket } from "@/src/hooks/useSocket";
 
 type MessageListProps = {
@@ -64,23 +64,23 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
 
               <div
                 className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
-  message.type === "audio"
-    ? "border border-violet-500/50 bg-[#191C24]"
-    : isMe
-      ? "rounded-br-sm bg-violet-600 text-white"
-      : "rounded-bl-sm border border-white/5 bg-[#191C24] text-gray-200"
-}`}
+                  message.type === "audio"
+                    ? "border border-violet-500/50 bg-[#191C24]"
+                    : isMe
+                      ? "rounded-br-sm bg-violet-600 text-white"
+                      : "rounded-bl-sm border border-white/5 bg-[#191C24] text-gray-200"
+                }`}
               >
-               {message.type === "audio" && message.audioUrl ? (
-<audio
-  controls
-  preload="metadata"
-  src={`http://localhost:4000${message.audioUrl}`}
-  className="h-9 w-56 max-w-full"
-/>
-) : (
-  message.content
-)}
+                {message.type === "audio" && message.audioUrl ? (
+                  <audio
+                    controls
+                    preload="metadata"
+                    src={`http://localhost:4000${message.audioUrl}`}
+                    className="h-9 w-56 max-w-full"
+                  />
+                ) : (
+                  message.content
+                )}
               </div>
 
               <div className="flex items-center gap-1.5 px-1">

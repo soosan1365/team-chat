@@ -7,20 +7,34 @@ import { createDefaultRooms } from "./modules/rooms/services/room.service.js";
 import { setMessageSocket } from "./modules/messages/services/message.socket.js";
 import jwt from "jsonwebtoken";
 import { isUserRoomMember } from "./modules/rooms/services/room.service.js";
+import cookie from "cookie";
 const httpServer = createServer(app);
 //ساخت سرور Socket.IO و مدیریت اتصال و ورود و خروج کاربران از اتاق‌ها
+
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
+    credentials: true,
   },
 });
+
 setMessageSocket(io);
 
+
 io.use((socket, next) => {
-  const token = socket.handshake.auth?.token;
   const secret = process.env.JWT_SECRET;
 
-  if (typeof token !== "string" || !secret) {
+  if (!secret) {
+    return next(new Error("Authentication is not configured"));
+  }
+
+const cookies = cookie.parse(
+  socket.handshake.headers.cookie ?? "",
+);
+const token = cookies.accessToken;
+
+
+  if (!token) {
     return next(new Error("Authentication required"));
   }
 
@@ -40,6 +54,7 @@ io.use((socket, next) => {
     next(new Error("Invalid or expired token"));
   }
 });
+
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -64,7 +79,7 @@ socket.on("join-room", async (roomId: string) => {
     }
 
     await socket.join(roomId);
-
+console.log("Socket joined room:", roomId);
     console.log(`User ${userId} joined room ${roomId}`);
   } catch (error) {
     console.error("Failed to join room:", error);

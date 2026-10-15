@@ -1,11 +1,10 @@
-
 "use client";
 
 import { Phone, Video, MoreVertical, Search } from "lucide-react";
 import { UsersRound } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useRooms } from "@/src/features/rooms/hooks/useRooms";
+import { useRooms } from "@/src/hooks/useRooms";
 
 type ChatHeaderProps = {
   roomId: string;
@@ -33,8 +32,6 @@ export default function ChatHeader({ roomId }: ChatHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1">
-       
-      
         {/* <Button variant="ghost" size="icon" aria-label="More options" className="text-gray-400 hover:bg-white/10 hover:text-white">
           <MoreVertical className="h-5 w-5" />
         </Button> */}
