@@ -61,7 +61,12 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form
+            onSubmit={handleSubmit}
+            autoComplete="off"
+            className="space-y-5"
+          >
+            {" "}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-300">
                 Full name
@@ -79,7 +84,6 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-300">
                 Email address
@@ -98,7 +102,6 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-300">
                 Password
@@ -118,27 +121,31 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-
             {error && (
-              <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+              <p
+                role="alert"
+                className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400"
+              >
                 {error}
               </p>
             )}
-
             {success && (
-              <p role="status" className="rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-400">
+              <p
+                role="status"
+                className="rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-400"
+              >
                 Account created successfully. You can now sign in.
               </p>
             )}
-
             <Button
               type="submit"
               disabled={registerMutation.isPending || success}
               className="h-11 w-full bg-violet-600 font-medium text-white hover:bg-violet-500"
             >
-              {registerMutation.isPending ? "Creating account..." : "Create account"}
+              {registerMutation.isPending
+                ? "Creating account..."
+                : "Create account"}
             </Button>
-
             {success && (
               <Link
                 href="/login"
@@ -152,7 +159,10 @@ export default function RegisterPage() {
           <div className="mt-7 border-t border-white/10 pt-6 text-center">
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
-              <Link href="/login" className="font-medium text-violet-400 hover:text-violet-300">
+              <Link
+                href="/login"
+                className="font-medium text-violet-400 hover:text-violet-300"
+              >
                 Sign in
               </Link>
             </p>

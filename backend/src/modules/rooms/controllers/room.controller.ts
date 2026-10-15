@@ -7,8 +7,9 @@ export async function getRoomsController(
   req: Request,
   res: Response
 ) {
+  console.log("Current userId:", req.userId);
   try {
-    const rooms = await getRooms(req.userId!);
+    const rooms = await getRooms(req.userId);
     res.json(rooms);
   } catch (error) {
     console.error("Failed to fetch rooms:", error);

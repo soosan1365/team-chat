@@ -11,6 +11,7 @@ declare global {
   }
 }
 
+// فقط کاربران احراز هویت‌شده اجازه دسترسی دارند
 export function authenticateToken(
   req: Request,
   res: Response,
@@ -35,10 +36,7 @@ export function authenticateToken(
   try {
     const payload = jwt.verify(token, JWT_SECRET);
 
-    if (
-      typeof payload === "string" ||
-      typeof payload.userId !== "string"
-    ) {
+    if (typeof payload === "string" || typeof payload.userId !== "string") {
       res.status(401).json({ message: "Invalid token" });
       return;
     }
@@ -52,3 +50,29 @@ export function authenticateToken(
   }
 }
 
+// احراز هویت اختیاری؛ مهمان هم می‌تواند لیست روم‌ها را ببیند
+export function optionalAuthenticateToken(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) {
+  const token = req.cookies?.accessToken;
+
+  // بدون کوکی، درخواست به‌عنوان مهمان ادامه پیدا می‌کند
+  if (!token || !JWT_SECRET) {
+    next();
+    return;
+  }
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+
+    if (typeof payload !== "string" && typeof payload.userId === "string") {
+      req.userId = payload.userId;
+    }
+  } catch {
+    // توکن نامعتبر یا منقضی است؛ برای مسیر عمومی ادامه می‌دهیم
+  }
+
+  next();
+}

@@ -12,7 +12,7 @@ export async function createDefaultRooms() {
 
   console.log("Default rooms are ready");
 }
-export async function getRooms(userId: string) {
+export async function getRooms(userId?: string) {
   const rooms = await prisma.room.findMany({
     orderBy: { name: "asc" },
     include: {
@@ -34,9 +34,9 @@ export async function getRooms(userId: string) {
 
   return rooms.map((room) => ({
     ...room,
-    isMember: room.members.some(
-      (member) => member.userId === userId
-    ),
+   isMember: userId
+  ? room.members.some((member) => member.userId === userId)
+  : false,
   }));
 }
 export async function isUserRoomMember(

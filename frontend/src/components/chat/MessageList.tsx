@@ -1,9 +1,11 @@
 "use client";
 
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRoomMessages } from "@/src/hooks/useRoomMessages";
+import { useRooms } from "@/src/hooks/useRooms";
 import { useSocket } from "@/src/hooks/useSocket";
+import { useEffect, useRef } from "react";
 
 type MessageListProps = {
   roomId: string;
@@ -11,22 +13,88 @@ type MessageListProps = {
 };
 
 export default function MessageList({ roomId, userId }: MessageListProps) {
-  const { data: messages, isLoading, isError, error } = useRoomMessages(roomId);
+  const { data: rooms, isLoading: isLoadingRooms } = useRooms();
+  const currentRoom = rooms?.find((room) => room.id === roomId);
+  const isMember = currentRoom?.isMember;
 
-  useSocket(roomId);
+  const { data: messages, isLoading, isError } = useRoomMessages(roomId);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useSocket(isMember ? roomId : "");
+
+  useEffect(() => {
+    if (isLoading || isLoadingRooms || !isMember) return;
+
+    bottomRef.current?.scrollIntoView({
+      behavior: "instant",
+      block: "end",
+    });
+  }, [isLoading, isLoadingRooms, isMember, messages]);
+
+  // هنوز اتاقی انتخاب نشده
+  if (!roomId) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] px-4">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10">
+            <MessageCircle className="h-7 w-7 text-violet-400" />
+          </div>
+
+          <h3 className="mb-2 text-base font-semibold text-gray-100">
+            انتخاب اتاق گفتگو
+          </h3>
+
+          <p className="text-sm text-gray-400">
+            برای شروع چت، یک اتاق از سایدبار انتخاب کن.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // وضعیت عضویت هنوز در حال دریافت است
+  if (isLoadingRooms) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] text-sm text-gray-400">
+        Select a Chat Room!{" "}
+      </div>
+    );
+  }
+
+  // کاربر عضو اتاق نیست
+  if (currentRoom && !isMember) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] px-4">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10">
+            <MessageCircle className="h-7 w-7 text-violet-400" />
+          </div>
+
+          <h3 className="mb-2 text-base font-semibold text-gray-100">
+            Join this room first!{" "}
+          </h3>
+
+          <p className="text-sm leading-6 text-gray-400">
+            To view messages, click Join in the sidebar.{" "}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
-        Loading messages...
+      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] text-sm text-gray-400">
+        Loading messages...{" "}
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex flex-1 items-center justify-center text-sm text-red-400">
-        Failed to load messages.
+      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] text-sm text-red-400">
+        Failed to load messages. Please try again.{" "}
       </div>
     );
   }
@@ -90,6 +158,7 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
                     minute: "2-digit",
                   })}
                 </span>
+
                 {isMe && <CheckCheck className="h-3.5 w-3.5 text-violet-400" />}
               </div>
             </div>
@@ -107,9 +176,11 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
 
       {!messages?.length && (
         <p className="py-8 text-center text-sm text-gray-500">
-          No messages yet. Start the conversation!
+          No messages yet. Start the conversation!{" "}
         </p>
       )}
+
+      <div ref={bottomRef} />
     </div>
   );
 }
