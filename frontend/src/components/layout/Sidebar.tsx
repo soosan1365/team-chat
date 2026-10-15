@@ -12,11 +12,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useRooms } from "@/src/hooks/useRooms";
 import { useJoinRoom } from "@/src/hooks/useJoinRoom";
-
+import { useLeaveRoom } from "@/src/hooks/useLeaveRoom";
 type SidebarProps = {
   selectedRoomId: string | null;
-  onSelectRoom: (roomId: string) => void;
-};
+onSelectRoom: (roomId: string | null) => void;};
 
 export default function Sidebar({
   selectedRoomId,
@@ -24,6 +23,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const { data: rooms, isLoading, isError } = useRooms();
   const joinRoomMutation = useJoinRoom();
+  const leaveRoomMutation = useLeaveRoom();
   const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
 
   return (
@@ -92,17 +92,30 @@ export default function Sidebar({
                     </p>
                   </div>
                 </button>
-                {!room.isMember && (
+                {room.isMember ? (
                   <Button
                     size="sm"
-                    disabled={joinRoomMutation.isPending}
+                    variant="outline"
+                    disabled={leaveRoomMutation.isPending}
                     onClick={() => {
-                      joinRoomMutation.mutate(room.id, {
+                      leaveRoomMutation.mutate(room.id, {
                         onSuccess: () => {
-                          // Refresh the room list to update membership status
+                          
+                          if (selectedRoomId === room.id) {
+                            onSelectRoom("");
+                          }
                         },
                       });
                     }}
+                    className="shrink-0 rounded-lg"
+                  >
+                    {leaveRoomMutation.isPending ? "Leaving..." : "Leave"}
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    disabled={joinRoomMutation.isPending}
+                    onClick={() => joinRoomMutation.mutate(room.id)}
                     className="shrink-0 rounded-lg bg-violet-600 text-white hover:bg-violet-500"
                   >
                     {joinRoomMutation.isPending ? "Joining..." : "Join"}

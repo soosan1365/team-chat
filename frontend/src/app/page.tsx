@@ -15,14 +15,14 @@ export default function Home() {
 
   const currentUser = data?.user ?? null;
 
-  function handleSelectRoom(roomId: string) {
-    if (!currentUser) {
-      router.push("/login");
-      return;
-    }
-
-    setSelectedRoomId(roomId);
+ function handleSelectRoom(roomId: string | null) {
+  if (!currentUser && roomId !== null) {
+    router.push("/login");
+    return;
   }
+
+  setSelectedRoomId(roomId);
+}
 
   return (
     <main className="flex h-screen flex-col overflow-hidden bg-[#0B0D12] p-3 md:p-4">

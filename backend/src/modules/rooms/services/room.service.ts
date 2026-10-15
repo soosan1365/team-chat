@@ -72,3 +72,13 @@ export async function joinRoom(userId: string, roomId: string) {
     },
   });
 }
+export async function leaveRoom(userId: string, roomId: string) {
+  return prisma.roomMember.delete({
+    where: {
+      userId_roomId: {
+        userId,
+        roomId,
+      },
+    },
+  });
+}
