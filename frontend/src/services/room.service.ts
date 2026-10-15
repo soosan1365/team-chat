@@ -31,3 +31,17 @@ export async function joinRoom(roomId: string) {
 
   return data;
 }
+export async function leaveRoom(roomId: string) {
+  const response = await fetch(`${API_URL}/rooms/${roomId}/leave`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.message ?? "Failed to leave room");
+  }
+
+  return data;
+}

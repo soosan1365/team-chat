@@ -17,8 +17,11 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
   const currentRoom = rooms?.find((room) => room.id === roomId);
   const isMember = currentRoom?.isMember;
 
-  const { data: messages, isLoading, isError } = useRoomMessages(roomId);
-
+const {
+  data: messages,
+  isLoading,
+  isError,
+} = useRoomMessages(roomId, Boolean(isMember));
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useSocket(isMember ? roomId : "");
