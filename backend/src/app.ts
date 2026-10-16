@@ -11,7 +11,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://team-chat-jz7u.vercel.app",
+    ],
     credentials: true,
   }),
 );
