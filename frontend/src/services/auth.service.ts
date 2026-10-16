@@ -1,6 +1,5 @@
 
-const API_URL = "http://localhost:4000/api/auth";
-
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api/auth`;
 export type RegisterInput = {
   name: string;
   email: string;
