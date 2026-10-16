@@ -47,11 +47,13 @@ model Message {
   userId    String
   roomId    String
   createdAt DateTime @default(now())
+  type      String   @default("text")
+  audioUrl  String?
+  fileUrl   String?
+  fileName  String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId, createdAt])
-    type      String   @default("text")
-  audioUrl  String?
 }

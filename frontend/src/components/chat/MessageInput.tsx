@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
-import { Paperclip, Smile, Send, Mic } from "lucide-react";
+import { useRef, useState } from "react";
+import { Paperclip, Smile, Send, Mic, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createMessage } from "@/src/services/message.service";
 import { uploadAudioMessage } from "@/src/services/audio.service";
-
+import { useUploadAttachment } from "@/src/hooks/useUploadAttachment";
 type MessageInputProps = {
   roomId: string;
   isMember: boolean;
@@ -20,9 +20,10 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
     null,
   );
   const [isUploading, setIsUploading] = useState(false);
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const isDisabled = !isMember || isUploading;
-
+  const uploadAttachmentMutation = useUploadAttachment(roomId);
   function handleRecording() {
     if (!isMember || isUploading) return;
 
@@ -106,7 +107,30 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
   }
 
   async function handleSendClick() {
-    if (!isMember || isUploading) return;
+    if (!isMember || isUploading || uploadAttachmentMutation.isPending) {
+      return;
+    }
+
+    if (selectedFile) {
+      try {
+        await uploadAttachmentMutation.mutateAsync(selectedFile);
+
+        setSelectedFile(null);
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      } catch (error) {
+        console.error("Failed to upload attachment:", error);
+        alert(
+          error instanceof Error
+            ? error.message
+            : "Failed to upload attachment.",
+        );
+      }
+
+      return;
+    }
 
     if (isRecording) {
       await handleSendAudio();
@@ -117,17 +141,61 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
 
   return (
     <div className="border-t border-white/10 bg-[#000205] p-4">
+    
+{selectedFile && (
+  <div className="mb-2 flex min-w-0 max-w-full items-center gap-2 rounded-lg border border-white/10 bg-[#0e1118] px-3 py-2 sm:max-w-sm">
+    <Paperclip className="h-4 w-4 shrink-0 text-violet-400" />
+
+    <span
+      className="min-w-0 flex-1 truncate text-xs text-gray-300"
+      title={selectedFile.name}
+    >
+      {selectedFile.name}
+    </span>
+
+    <span className="shrink-0 text-[10px] text-gray-500">
+      {selectedFile.size < 1024 * 1024
+        ? `${(selectedFile.size / 1024).toFixed(0)} KB`
+        : `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`}
+    </span>
+
+    <button
+      type="button"
+      onClick={() => {
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }}
+      className="shrink-0 rounded-md p-1 text-gray-400 transition hover:bg-white/10 hover:text-white"
+      aria-label="Remove selected file"
+    >
+      <X className="h-4 w-4" />
+    </button>
+  </div>
+)}
+
       <div className="relative flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0e1118] px-3 py-2 transition focus-within:border-violet-500/50">
         <Button
           type="button"
           variant="ghost"
           size="icon"
           disabled={isDisabled}
-          className="shrink-0 text-white hover:bg-white/35 hover:text-white"
+          onClick={() => fileInputRef.current?.click()}
+          className="shrink-0 text-white hover:bg-white/10 hover:text-white"
           aria-label="Attach file"
         >
           <Paperclip className="h-5 w-5" />
         </Button>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          onChange={(event) => {
+            setSelectedFile(event.target.files?.[0] ?? null);
+          }}
+        />
 
         <Input
           disabled={isDisabled}
@@ -215,7 +283,11 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
         <Button
           type="button"
           onClick={() => void handleSendClick()}
-          disabled={isDisabled || (!isRecording && !message.trim())}
+          disabled={
+            isDisabled ||
+            uploadAttachmentMutation.isPending ||
+            (!selectedFile && !isRecording && !message.trim())
+          }
           size="icon"
           className="shrink-0 rounded-xl bg-violet-600 text-white hover:bg-violet-300 disabled:opacity-40"
           aria-label={isRecording ? "Stop recording" : "Send message"}

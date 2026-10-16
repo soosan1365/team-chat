@@ -6,6 +6,7 @@ import { useRoomMessages } from "@/src/hooks/useRoomMessages";
 import { useRooms } from "@/src/hooks/useRooms";
 import { useSocket } from "@/src/hooks/useSocket";
 import { useEffect, useRef } from "react";
+import { Paperclip, Download } from "lucide-react";
 import ChatStatus from "./ChatStatus";
 type MessageListProps = {
   roomId: string;
@@ -34,6 +35,7 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
       block: "end",
     });
   }, [isLoading, isLoadingRooms, isMember, messages]);
+
   if (!roomId) {
     return (
       <ChatStatus
@@ -86,14 +88,18 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
       />
     );
   }
-
   // Messages list
+
   return (
     <div className="flex-1 space-y-6 overflow-y-auto bg-[#070d18] p-6">
       {messages?.length ? (
         messages.map((message) => {
           const isMe = message.userId === userId;
-
+          console.log("Message:", {
+            type: message.type,
+            fileUrl: message.fileUrl,
+            fileName: message.fileName,
+          });
           return (
             <div
               key={message.id}
@@ -133,9 +139,23 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
                     <audio
                       controls
                       preload="metadata"
-                      src={`http://localhost:4000${message.audioUrl}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${message.audioUrl}`}
                       className="h-9 w-56 max-w-full"
                     />
+                  ) : message.type === "file" && message.fileUrl ? (
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${message.fileUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download={message.fileName ?? true}
+                      className="flex items-center gap-3 text-teal-200 transition hover:text-teal-100"
+                    >
+                      <Paperclip className="h-5 w-5 shrink-0" />
+                      <span className="max-w-48 break-all">
+                        {message.fileName ?? message.content}
+                      </span>
+                      <Download className="h-4 w-4 shrink-0" />
+                    </a>
                   ) : (
                     message.content
                   )}

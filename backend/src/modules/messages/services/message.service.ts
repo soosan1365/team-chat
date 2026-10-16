@@ -24,6 +24,8 @@ type CreateMessageInput = {
   roomId: string;
   type?: string;
   audioUrl?: string | null;
+  fileUrl?: string | null;
+fileName?: string | null;
 };
 
 export async function createMessage(input: CreateMessageInput) {
@@ -34,6 +36,8 @@ export async function createMessage(input: CreateMessageInput) {
       roomId: input.roomId,
       type: input.type ?? "text",
       audioUrl: input.audioUrl ?? null,
+      fileUrl: input.fileUrl ?? null,
+      fileName: input.fileName ?? null,
     },
     include: {
       user: {

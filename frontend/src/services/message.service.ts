@@ -13,6 +13,8 @@ export type Message = {
   };
   type: string;
   audioUrl: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
 };
 
 async function parseResponse<T>(response: Response): Promise<T> {

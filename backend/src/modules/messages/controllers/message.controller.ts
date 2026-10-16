@@ -44,19 +44,18 @@ export async function createMessageController(
   req: Request<{ roomId: string }, unknown, { content: string }>,
   res: Response,
 ) {
-
   try {
- const { roomId } = req.params;
-const { content } = req.body;
-const userId = req.userId;
-const isMember = await isUserRoomMember(userId ?? "", roomId);
+    const { roomId } = req.params;
+    const { content } = req.body;
+    const userId = req.userId;
+    const isMember = await isUserRoomMember(userId ?? "", roomId);
 
-if (!isMember) {
-  res.status(403).json({
-    message: "Access denied to this room",
-  });
-  return;
-}
+    if (!isMember) {
+      res.status(403).json({
+        message: "Access denied to this room",
+      });
+      return;
+    }
     if (
       typeof content !== "string" ||
       !content.trim() ||
@@ -125,5 +124,48 @@ export async function createAudioMessageController(
   } catch (error) {
     console.error("Failed to create audio message:", error);
     res.status(500).json({ message: "Failed to create audio message" });
+  }
+}
+export async function createAttachmentMessageController(
+  req: Request<{ roomId: string }>,
+  res: Response,
+) {
+  try {
+    const { roomId } = req.params;
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    const isMember = await isUserRoomMember(userId, roomId);
+
+    if (!isMember) {
+      res.status(403).json({ message: "Access denied to this room" });
+      return;
+    }
+
+    if (!req.file) {
+      res.status(400).json({ message: "Attachment file is required" });
+      return;
+    }
+
+    const fileUrl = `/uploads/attachments/${path.basename(req.file.filename)}`;
+
+    const message = await createMessage({
+      content: Buffer.from(req.file.originalname, "latin1").toString("utf8"),
+      userId,
+      roomId,
+      type: "file",
+      fileUrl,
+      fileName: Buffer.from(req.file.originalname, "latin1").toString("utf8"),
+    });
+
+    emitNewMessage(roomId, message);
+    res.status(201).json(message);
+  } catch (error) {
+    console.error("Failed to create attachment message:", error);
+    res.status(500).json({ message: "Failed to create attachment message" });
   }
 }

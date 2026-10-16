@@ -5,7 +5,8 @@ import { createMessageController } from "../controllers/message.controller.js";
 import { authenticateToken } from "../../../middlewares/auth.middleware.js";
 import { uploadAudio } from "../../../middlewares/upload.middleware.js";
 import { createAudioMessageController } from "../controllers/message.controller.js";
-
+import { uploadAttachment } from "../../../middlewares/upload.middleware.js";
+import { createAttachmentMessageController } from "../controllers/message.controller.js";
 const router = Router();
 
 router.get(
@@ -24,5 +25,10 @@ router.post(
   uploadAudio.single("audio"),
   createAudioMessageController,
 );
-
+router.post(
+  "/rooms/:roomId/attachments",
+  authenticateToken,
+  uploadAttachment.single("file"),
+  createAttachmentMessageController,
+);
 export default router;

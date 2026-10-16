@@ -29,3 +29,45 @@ export const uploadAudio = multer({
     }
   },
 });
+const attachmentDir = path.resolve("uploads/attachments");
+
+fs.mkdirSync(attachmentDir, { recursive: true });
+
+const attachmentStorage = multer.diskStorage({
+  destination: (_req, _file, callback) => {
+    callback(null, attachmentDir);
+  },
+  filename: (_req, file, callback) => {
+    const extension = path.extname(file.originalname);
+    callback(
+      null,
+      `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`,
+    );
+  },
+});
+
+export const uploadAttachment = multer({
+  storage: attachmentStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+  fileFilter: (_req, file, callback) => {
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "application/pdf",
+    "text/plain",
+    "application/zip",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    callback(null, true);
+  } else {
+    callback(new Error("File type not allowed"));
+  }
+},
+});

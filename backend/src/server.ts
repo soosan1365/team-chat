@@ -17,10 +17,7 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
-
 setMessageSocket(io);
-
-
 io.use((socket, next) => {
   const secret = process.env.JWT_SECRET;
 
