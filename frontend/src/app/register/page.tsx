@@ -43,12 +43,12 @@ export default function RegisterPage() {
 
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex items-center justify-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-600/20">
-            <MessageCircle className="h-6 w-6 text-white" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-300 to-cyan-500 shadow-lg shadow-teal-500/20 transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-105 sm:h-10 sm:w-10">
+            <MessageCircle className="h-5 w-5 text-[#0D1726]" />
           </div>
-          <span className="text-2xl font-semibold tracking-tight">
-            Team<span className="text-violet-400">Chat</span>
-          </span>
+          <h1 className="text-base font-bold tracking-tight text-slate-100 sm:text-lg">
+            Team<span className="text-teal-300">Flow</span>
+          </h1>
         </div>
 
         <section className="rounded-2xl border border-white/10 bg-[#11131B]/95 p-7 shadow-2xl shadow-black/30 sm:p-9">
@@ -66,7 +66,6 @@ export default function RegisterPage() {
             autoComplete="off"
             className="space-y-5"
           >
-            {" "}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-300">
                 Full name
@@ -140,7 +139,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={registerMutation.isPending || success}
-              className="h-11 w-full bg-violet-600 font-medium text-white hover:bg-violet-500"
+              className="h-11 w-full bg-teal-600 font-medium text-white hover:bg-violet-500"
             >
               {registerMutation.isPending
                 ? "Creating account..."

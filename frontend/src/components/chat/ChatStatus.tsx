@@ -32,10 +32,10 @@ export default function ChatStatus({
   const isError = type === "error";
 
   return (
-    <div className="flex min-h-[240px] flex-1 items-center justify-center overflow-hidden bg-[#0B0D12] px-5 py-8">
+    <div className="flex min-h-[240px] flex-1 items-center justify-center overflow-hidden bg-[#030814] px-5 py-8">
       <div className="relative flex max-w-sm flex-col items-center text-center">
         {/* Decorative glow */}
-        <div className="absolute top-2 h-24 w-24 rounded-full bg-violet-600/20 blur-3xl" />
+        <div className="absolute top-2 h-24 w-24 rounded-full bg-violet-900/10 blur-3xl" />
 
         {/* Icon container */}
         <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-violet-400/20 bg-gradient-to-br from-violet-500/15 to-indigo-500/5 shadow-[0_0_40px_rgba(139,92,246,0.12)]">
