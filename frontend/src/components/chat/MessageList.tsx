@@ -8,6 +8,7 @@ import { useSocket } from "@/src/hooks/useSocket";
 import { useEffect, useRef } from "react";
 import { Paperclip, Download } from "lucide-react";
 import ChatStatus from "./ChatStatus";
+import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
 type MessageListProps = {
   roomId: string;
   userId: string;
@@ -23,10 +24,15 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
     isLoading,
     isError,
   } = useRoomMessages(roomId, Boolean(isMember));
+  const markRoomAsRead = useMarkRoomAsRead();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useSocket(isMember ? roomId : "");
+useEffect(() => {
+  if (isLoading || isLoadingRooms || isError || !isMember) return;
 
+  markRoomAsRead.mutate(roomId);
+}, [roomId, isLoading, isLoadingRooms, isError, isMember]);
   useEffect(() => {
     if (isLoading || isLoadingRooms || !isMember) return;
 

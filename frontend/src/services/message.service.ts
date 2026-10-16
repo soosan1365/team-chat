@@ -55,3 +55,22 @@ export async function createMessage(input: CreateMessageInput) {
 
   return parseResponse<Message>(response);
 }
+export async function markRoomAsRead(roomId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/rooms/${roomId}/read`, {
+    method: "PATCH",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to mark room as read");
+  }
+}
+export async function getUnreadMessagesCount(): Promise<number> {
+  const response = await fetch(`${API_URL}/messages/unread-count`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  const data = await parseResponse<{ count: number }>(response);
+  return data.count;
+}

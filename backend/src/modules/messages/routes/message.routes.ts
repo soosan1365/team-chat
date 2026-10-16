@@ -1,12 +1,13 @@
 // تعیین آدرس‌های API برای دریافت و ارسال پیام
 import { Router } from "express";
-import { getRoomMessagesController } from "../controllers/message.controller.js";
+import { getRoomMessagesController, getUnreadMessagesCountController, markRoomAsReadController } from "../controllers/message.controller.js";
 import { createMessageController } from "../controllers/message.controller.js";
 import { authenticateToken } from "../../../middlewares/auth.middleware.js";
 import { uploadAudio } from "../../../middlewares/upload.middleware.js";
 import { createAudioMessageController } from "../controllers/message.controller.js";
 import { uploadAttachment } from "../../../middlewares/upload.middleware.js";
 import { createAttachmentMessageController } from "../controllers/message.controller.js";
+
 const router = Router();
 
 router.get(
@@ -30,5 +31,15 @@ router.post(
   authenticateToken,
   uploadAttachment.single("file"),
   createAttachmentMessageController,
+);
+router.patch(
+  "/rooms/:roomId/read",
+  authenticateToken,
+  markRoomAsReadController,
+);
+router.get(
+  "/messages/unread-count",
+  authenticateToken,
+  getUnreadMessagesCountController,
 );
 export default router;

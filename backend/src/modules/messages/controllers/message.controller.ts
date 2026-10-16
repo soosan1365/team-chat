@@ -1,9 +1,10 @@
 //مدیریت درخواست؛ اول ذخیره پیام را صدا می‌زند، بعد تابع ارسال Socket را فراخوانی می‌کند
 import type { Request, Response } from "express";
-import { getRoomMessages } from "../services/message.service.js";
+import { getRoomMessages, getUnreadMessagesCount } from "../services/message.service.js";
 import { createMessage } from "../services/message.service.js";
 import { emitNewMessage } from "../services/message.socket.js";
 import { isUserRoomMember } from "../../rooms/services/room.service.js";
+import { markRoomAsRead } from "../services/message.service.js";
 import path from "node:path";
 export async function getRoomMessagesController(
   req: Request<{ roomId: string }>,
@@ -167,5 +168,53 @@ export async function createAttachmentMessageController(
   } catch (error) {
     console.error("Failed to create attachment message:", error);
     res.status(500).json({ message: "Failed to create attachment message" });
+  }
+}
+
+export async function markRoomAsReadController(
+  req: Request<{ roomId: string }>,
+  res: Response,
+) {
+  try {
+    const { roomId } = req.params;
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    const isMember = await isUserRoomMember(userId, roomId);
+
+    if (!isMember) {
+      res.status(403).json({ message: "Access denied to this room" });
+      return;
+    }
+
+    await markRoomAsRead(userId, roomId);
+    res.status(204).end();
+  } catch (error) {
+    console.error("Failed to mark room as read:", error);
+    res.status(500).json({ message: "Failed to mark room as read" });
+  }
+}
+export async function getUnreadMessagesCountController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    const count = await getUnreadMessagesCount(userId);
+
+    res.json({ count });
+  } catch (error) {
+    console.error("Failed to get unread messages count:", error);
+    res.status(500).json({ message: "Failed to get unread messages count" });
   }
 }

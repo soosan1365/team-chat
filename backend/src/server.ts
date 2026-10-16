@@ -25,11 +25,8 @@ io.use((socket, next) => {
     return next(new Error("Authentication is not configured"));
   }
 
-const cookies = cookie.parse(
-  socket.handshake.headers.cookie ?? "",
-);
-const token = cookies.accessToken;
-
+  const cookies = cookie.parse(socket.handshake.headers.cookie ?? "");
+  const token = cookies.accessToken;
 
   if (!token) {
     return next(new Error("Authentication required"));
@@ -38,10 +35,7 @@ const token = cookies.accessToken;
   try {
     const payload = jwt.verify(token, secret);
 
-    if (
-      typeof payload === "string" ||
-      typeof payload.userId !== "string"
-    ) {
+    if (typeof payload === "string" || typeof payload.userId !== "string") {
       return next(new Error("Invalid token"));
     }
 
@@ -52,42 +46,40 @@ const token = cookies.accessToken;
   }
 });
 
-
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
-  
-socket.on("join-room", async (roomId: string) => {
-  if (typeof roomId !== "string" || !roomId.trim()) {
-    return;
-  }
 
-  try {
-    const userId = socket.data.userId as string;
-
-    const isMember = await isUserRoomMember(userId, roomId);
-
-    if (!isMember) {
-      socket.emit("room-error", "You are not a member of this room");
+  socket.on("join-room", async (roomId: string) => {
+    if (typeof roomId !== "string" || !roomId.trim()) {
       return;
     }
 
-    await socket.join(roomId);
-console.log("Socket joined room:", roomId);
-    console.log(`User ${userId} joined room ${roomId}`);
-  } catch (error) {
-    console.error("Failed to join room:", error);
-    socket.emit("room-error", "Could not join room");
-  }
-});
-socket.on("leave-room", (roomId: string) => {
-  socket.leave(roomId);
-  console.log(`Socket ${socket.id} left room ${roomId}`);
-});
+    try {
+      const userId = socket.data.userId as string;
 
+      const isMember = await isUserRoomMember(userId, roomId);
+
+      if (!isMember) {
+        socket.emit("room-error", "You are not a member of this room");
+        return;
+      }
+
+      await socket.join(roomId);
+      console.log("Socket joined room:", roomId);
+      console.log(`User ${userId} joined room ${roomId}`);
+    } catch (error) {
+      console.error("Failed to join room:", error);
+      socket.emit("room-error", "Could not join room");
+    }
+  });
+  socket.on("leave-room", (roomId: string) => {
+    socket.leave(roomId);
+    console.log(`Socket ${socket.id} left room ${roomId}`);
+  });
 });
 
 async function startServer() {

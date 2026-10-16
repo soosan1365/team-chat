@@ -49,3 +49,45 @@ export async function createMessage(input: CreateMessageInput) {
     },
   });
 }
+export async function markRoomAsRead(
+  userId: string,
+  roomId: string,
+) {
+  return prisma.roomMember.update({
+    where: {
+      userId_roomId: {
+        userId,
+        roomId,
+      },
+    },
+    data: {
+      lastReadAt: new Date(),
+    },
+  });
+}
+export async function getUnreadMessagesCount(userId: string) {
+  const memberships = await prisma.roomMember.findMany({
+    where: { userId },
+    select: {
+      roomId: true,
+      joinedAt: true,
+      lastReadAt: true,
+    },
+  });
+
+  const counts = await Promise.all(
+    memberships.map((membership) =>
+      prisma.message.count({
+        where: {
+          roomId: membership.roomId,
+          userId: { not: userId },
+          createdAt: {
+            gt: membership.lastReadAt ?? membership.joinedAt,
+          },
+        },
+      }),
+    ),
+  );
+
+  return counts.reduce((total, count) => total + count, 0);
+}

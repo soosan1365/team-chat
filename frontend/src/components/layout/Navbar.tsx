@@ -5,12 +5,13 @@ import { useLogout } from "@/src/hooks/useLogout";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, Search, MessageCircle, LogOut } from "lucide-react";
+import { useUnreadMessagesCount } from "@/src/hooks/useUnreadMessagesCount";
 
 export default function Navbar() {
   const router = useRouter();
   const { data, isPending } = useCurrentUser();
+  const { data: unreadCount = 0 } = useUnreadMessagesCount();
   const logout = useLogout();
 
   const user = data?.user ?? null;
@@ -72,11 +73,16 @@ export default function Navbar() {
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Notifications"
+          aria-label={`Notifications, ${unreadCount} unread messages`}
           className="relative h-9 w-9 rounded-xl text-slate-400 transition-all hover:bg-teal-400/10 hover:text-teal-300 focus-visible:ring-2 focus-visible:ring-teal-400"
         >
-          <Bell className="h-[18px] w-[18px] transition-transform duration-300 hover:rotate-12" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-teal-300 ring-2 ring-[#0D1726]" />
+          <Bell className="h-[18px] w-[18px]" />
+
+          {unreadCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white ring-2 ring-[#0D1726]">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </Button>
 
         <div className="hidden h-8 w-px bg-slate-700 sm:block" />

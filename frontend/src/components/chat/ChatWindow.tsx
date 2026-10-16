@@ -4,7 +4,8 @@ import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import { useRooms } from "@/src/hooks/useRooms";
-
+import { useEffect } from "react";
+import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
 type ChatWindowProps = {
   selectedRoomId: string | null;
   currentUserId: string;
@@ -15,7 +16,15 @@ export default function ChatWindow({
   currentUserId,
 }: ChatWindowProps) {
   const { data: rooms } = useRooms();
+  const markRoomAsRead = useMarkRoomAsRead();
 
+  const currentRoom = rooms?.find((room) => room.id === selectedRoomId);
+  const isMember = currentRoom?.isMember ?? false;
+  useEffect(() => {
+    if (selectedRoomId && isMember) {
+      markRoomAsRead.mutate(selectedRoomId);
+    }
+  }, [selectedRoomId, isMember]);
   if (!selectedRoomId) {
     return (
       <section className="flex h-full min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-xl border border-[#293B55] bg-[#0B1424] px-4 sm:rounded-2xl sm:px-6">
@@ -46,9 +55,6 @@ export default function ChatWindow({
       </section>
     );
   }
-
-  const currentRoom = rooms?.find((room) => room.id === selectedRoomId);
-  const isMember = currentRoom?.isMember ?? false;
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-[#293B55] bg-[#0B1424] sm:rounded-2xl">
