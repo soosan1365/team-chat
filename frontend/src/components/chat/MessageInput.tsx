@@ -116,14 +116,14 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
   }
 
   return (
-    <div className="border-t border-white/10 bg-[#111318] p-4">
-      <div className="relative flex items-center gap-3 rounded-2xl border border-white/10 bg-[#191C24] px-3 py-2 transition focus-within:border-violet-500/50">
+    <div className="border-t border-white/10 bg-[#000205] p-4">
+      <div className="relative flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0e1118] px-3 py-2 transition focus-within:border-violet-500/50">
         <Button
           type="button"
           variant="ghost"
           size="icon"
           disabled={isDisabled}
-          className="shrink-0 text-gray-400 hover:bg-white/10 hover:text-white"
+          className="shrink-0 text-white hover:bg-white/35 hover:text-white"
           aria-label="Attach file"
         >
           <Paperclip className="h-5 w-5" />
@@ -151,7 +151,7 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
           size="icon"
           disabled={isDisabled}
           onClick={() => setShowEmojis((previous) => !previous)}
-          className="shrink-0 text-gray-400 hover:bg-white/10 hover:text-white"
+          className="shrink-0 text-white hover:bg-white/35 hover:text-white"
           aria-label="Add emoji"
         >
           <Smile className="h-5 w-5" />
@@ -197,7 +197,7 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
           className={`shrink-0 ${
             isRecording
               ? "animate-pulse text-red-500"
-              : "text-gray-400 hover:bg-white/10 hover:text-white"
+              : "text-white hover:bg-white/35 hover:text-white"
           }`}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
@@ -217,10 +217,10 @@ export default function MessageInput({ roomId, isMember }: MessageInputProps) {
           onClick={() => void handleSendClick()}
           disabled={isDisabled || (!isRecording && !message.trim())}
           size="icon"
-          className="shrink-0 rounded-xl bg-violet-600 text-white hover:bg-violet-500 disabled:opacity-40"
+          className="shrink-0 rounded-xl bg-violet-600 text-white hover:bg-violet-300 disabled:opacity-40"
           aria-label={isRecording ? "Stop recording" : "Send message"}
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4  " />
         </Button>
       </div>
 

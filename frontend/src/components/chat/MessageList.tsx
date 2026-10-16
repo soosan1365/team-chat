@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCheck, MessageCircle } from "lucide-react";
+import { CheckCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRoomMessages } from "@/src/hooks/useRoomMessages";
 import { useRooms } from "@/src/hooks/useRooms";
@@ -34,29 +34,23 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
       block: "end",
     });
   }, [isLoading, isLoadingRooms, isMember, messages]);
-
   if (!roomId) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] px-4">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10">
-            <MessageCircle className="h-7 w-7 text-violet-400" />
-          </div>
-          <ChatStatus
-            type="empty"
-            title="Ready to connect?"
-            description="Choose a room from the sidebar and join the conversation."
-          />
-        </div>
-      </div>
+      <ChatStatus
+        type="empty"
+        title="Ready to connect?"
+        description="Choose a room from the sidebar and join the conversation."
+      />
     );
   }
 
   if (isLoadingRooms) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-[#0B0D12] text-sm text-gray-400">
-        Select a Chat Room!
-      </div>
+      <ChatStatus
+        type="loading"
+        title="Loading rooms..."
+        description="Getting your workspace ready."
+      />
     );
   }
 
@@ -95,7 +89,7 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
 
   // Messages list
   return (
-    <div className="flex-1 space-y-6 overflow-y-auto bg-[#0B0D12] p-6">
+    <div className="flex-1 space-y-6 overflow-y-auto bg-[#070d18] p-6">
       {messages?.length ? (
         messages.map((message) => {
           const isMe = message.userId === userId;
@@ -109,7 +103,7 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
             >
               {!isMe && (
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-indigo-500 text-xs text-white">
+                  <AvatarFallback className="bg-cyan-300 text-xs text-[#0D1726]">
                     {message.user.name?.slice(0, 2).toUpperCase() ?? "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -129,10 +123,10 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
                     message.type === "audio"
-                      ? "border border-violet-500/50 bg-[#191C24]"
+                      ? "border border-teal-400/20 bg-[#152437]"
                       : isMe
-                        ? "rounded-br-sm bg-violet-600 text-white"
-                        : "rounded-bl-sm border border-white/5 bg-[#191C24] text-gray-200"
+                        ? "rounded-br-sm border-[1px] border-teal-200 text-[#d2d6dd]"
+                        : "rounded-bl-sm border-[1px] border-teal-200  bg-[#152437] text-slate-200"
                   }`}
                 >
                   {message.type === "audio" && message.audioUrl ? (
@@ -163,7 +157,7 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
 
               {isMe && (
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-violet-600 text-xs text-white">
+                  <AvatarFallback className="bg-cyan-600 text-xs text-[#0D1726]">
                     You
                   </AvatarFallback>
                 </Avatar>
