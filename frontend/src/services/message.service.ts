@@ -11,6 +11,14 @@ export type Message = {
     id: string;
     name: string | null;
   };
+  replyTo: {
+    id: string;
+    content: string;
+    user: {
+      id: string;
+      name: string | null;
+    };
+  } | null;
   type: string;
   audioUrl: string | null;
   fileUrl: string | null;
@@ -39,6 +47,7 @@ export async function getRoomMessages(roomId: string): Promise<Message[]> {
 export type CreateMessageInput = {
   content: string;
   roomId: string;
+  replyToId?: string | null;
 };
 
 export async function createMessage(input: CreateMessageInput) {
@@ -50,8 +59,28 @@ export async function createMessage(input: CreateMessageInput) {
     },
     body: JSON.stringify({
       content: input.content,
+      replyToId: input.replyToId,
     }),
   });
+
+  return parseResponse<Message>(response);
+}
+export async function updateMessage(
+  roomId: string,
+  messageId: string,
+  content: string,
+): Promise<Message> {
+  const response = await fetch(
+    `${API_URL}/rooms/${roomId}/messages/${messageId}`,
+    {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content }),
+    },
+  );
 
   return parseResponse<Message>(response);
 }
@@ -73,4 +102,21 @@ export async function getUnreadMessagesCount(): Promise<number> {
 
   const data = await parseResponse<{ count: number }>(response);
   return data.count;
+}
+export async function deleteMessage(
+  roomId: string,
+  messageId: string,
+): Promise<void> {
+  const response = await fetch(
+    `${API_URL}/rooms/${roomId}/messages/${messageId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    },
+  );
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new Error(data?.message ?? "Failed to delete message");
+  }
 }

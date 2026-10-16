@@ -4,7 +4,7 @@ import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import { useRooms } from "@/src/hooks/useRooms";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
 type ChatWindowProps = {
   selectedRoomId: string | null;
@@ -17,7 +17,11 @@ export default function ChatWindow({
 }: ChatWindowProps) {
   const { data: rooms } = useRooms();
   const markRoomAsRead = useMarkRoomAsRead();
-
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    content: string;
+    senderName: string;
+  } | null>(null);
   const currentRoom = rooms?.find((room) => room.id === selectedRoomId);
   const isMember = currentRoom?.isMember ?? false;
   useEffect(() => {
@@ -61,9 +65,17 @@ export default function ChatWindow({
       <ChatHeader roomId={selectedRoomId} />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <MessageList roomId={selectedRoomId} userId={currentUserId} />
-
-        <MessageInput roomId={selectedRoomId} isMember={isMember} />
+        <MessageList
+          roomId={selectedRoomId}
+          userId={currentUserId}
+          onReply={setReplyingTo}
+        />
+        <MessageInput
+          roomId={selectedRoomId}
+          isMember={isMember}
+          replyingTo={replyingTo}
+          onCancelReply={() => setReplyingTo(null)}
+        />
       </div>
     </section>
   );

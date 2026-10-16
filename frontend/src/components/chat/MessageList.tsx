@@ -5,16 +5,79 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRoomMessages } from "@/src/hooks/useRoomMessages";
 import { useRooms } from "@/src/hooks/useRooms";
 import { useSocket } from "@/src/hooks/useSocket";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Paperclip, Download } from "lucide-react";
 import ChatStatus from "./ChatStatus";
 import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
+import MessageActions from "./MessageActions";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateMessage, type Message } from "@/src/services/message.service";
+import { useDeleteMessage } from "@/src/hooks/useDeleteMessage";
+import DeleteMessageDialog from "./DeleteMessageDialog";
 type MessageListProps = {
   roomId: string;
   userId: string;
+  onReply: (reply: { id: string; content: string; senderName: string }) => void;
 };
 
-export default function MessageList({ roomId, userId }: MessageListProps) {
+export default function MessageList({
+  roomId,
+  userId,
+  onReply,
+}: MessageListProps) {
+  const queryClient = useQueryClient();
+
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState("");
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const deleteMessageMutation = useDeleteMessage();
+  const handleSaveEdit = async (messageId: string) => {
+    const content = editContent.trim();
+
+    if (!content || !isMember) return;
+
+    try {
+      setIsSavingEdit(true);
+
+      const updatedMessage = await updateMessage(roomId, messageId, content);
+
+      queryClient.setQueryData<Message[]>(
+        ["messages", roomId],
+        (oldMessages = []) =>
+          oldMessages.map((message) =>
+            message.id === updatedMessage.id ? updatedMessage : message,
+          ),
+      );
+
+      setEditingMessageId(null);
+      setEditContent("");
+      setActiveMessageId(null);
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+  const handleDelete = (messageId: string) => {
+    if (!isMember) return;
+    setMessageToDelete(messageId);
+  };
+  const confirmDelete = () => {
+    if (!messageToDelete) return;
+
+    deleteMessageMutation.mutate(
+      { roomId, messageId: messageToDelete },
+      {
+        onSuccess: () => {
+          setActiveMessageId(null);
+          setMessageToDelete(null);
+        },
+        onError: (error) => {
+          console.error("Failed to delete message:", error);
+        },
+      },
+    );
+  };
   const { data: rooms, isLoading: isLoadingRooms } = useRooms();
   const currentRoom = rooms?.find((room) => room.id === roomId);
   const isMember = currentRoom?.isMember;
@@ -26,13 +89,19 @@ export default function MessageList({ roomId, userId }: MessageListProps) {
   } = useRoomMessages(roomId, Boolean(isMember));
   const markRoomAsRead = useMarkRoomAsRead();
   const bottomRef = useRef<HTMLDivElement>(null);
-
+  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    content: string;
+    senderName: string;
+  } | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   useSocket(isMember ? roomId : "");
-useEffect(() => {
-  if (isLoading || isLoadingRooms || isError || !isMember) return;
+  useEffect(() => {
+    if (isLoading || isLoadingRooms || isError || !isMember) return;
 
-  markRoomAsRead.mutate(roomId);
-}, [roomId, isLoading, isLoadingRooms, isError, isMember]);
+    markRoomAsRead.mutate(roomId);
+  }, [roomId, isLoading, isLoadingRooms, isError, isMember]);
   useEffect(() => {
     if (isLoading || isLoadingRooms || !isMember) return;
 
@@ -101,11 +170,16 @@ useEffect(() => {
       {messages?.length ? (
         messages.map((message) => {
           const isMe = message.userId === userId;
-          console.log("Message:", {
-            type: message.type,
-            fileUrl: message.fileUrl,
-            fileName: message.fileName,
-          });
+
+          const handleCopy = async () => {
+            try {
+              await navigator.clipboard.writeText(message.content);
+              setActiveMessageId(null);
+            } catch {
+              console.error("Failed to copy message");
+            }
+          };
+
           return (
             <div
               key={message.id}
@@ -115,7 +189,7 @@ useEffect(() => {
             >
               {!isMe && (
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-cyan-300 text-xs text-[#0D1726]">
+                  <AvatarFallback className= " bg-cyan-300 text-xs text-[#0D1726]">
                     {message.user.name?.slice(0, 2).toUpperCase() ?? "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -132,15 +206,54 @@ useEffect(() => {
                   </span>
                 )}
 
+                {activeMessageId === message.id && (
+                  <MessageActions
+                    isMe={isMe}
+                    onCopy={handleCopy}
+                    onReply={() => {
+                      onReply({
+                        id: message.id,
+                        content: message.content,
+                        senderName: message.user.name ?? "User",
+                      });
+                      setActiveMessageId(null);
+                    }}
+                    onEdit={() => {
+                      if (message.type !== "text") return;
+
+                      setEditingMessageId(message.id);
+                      setEditContent(message.content);
+                      setActiveMessageId(null);
+                    }}
+                    onDelete={() => handleDelete(message.id)}
+                    onForward={() => {}}
+                  />
+                )}
+
                 <div
-                  className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
+                  onClick={() =>
+                    setActiveMessageId(
+                      activeMessageId === message.id ? null : message.id,
+                    )
+                  }
+                  className={`cursor-pointer rounded-2xl px-4 py-3 text-sm leading-6 ${
                     message.type === "audio"
                       ? "border border-teal-400/20 bg-[#152437]"
                       : isMe
-                        ? "rounded-br-sm border-[1px] border-teal-200 text-[#d2d6dd]"
-                        : "rounded-bl-sm border-[1px] border-teal-200  bg-[#152437] text-slate-200"
+                        ? "rounded-br-sm border border-teal-200 text-[#d2d6dd]"
+                        : "rounded-bl-sm border border-teal-200 bg-[#152437] text-slate-200"
                   }`}
                 >
+                  {message.replyTo && (
+                    <div className="mb-2 border-l-2 border-teal-400 pl-3">
+                      <p className="text-xs font-semibold text-teal-300">
+                        {message.replyTo.user.name ?? "User"}
+                      </p>
+                      <p className="max-w-64 truncate text-xs text-slate-400">
+                        {message.replyTo.content}
+                      </p>
+                    </div>
+                  )}
                   {message.type === "audio" && message.audioUrl ? (
                     <audio
                       controls
@@ -154,6 +267,7 @@ useEffect(() => {
                       target="_blank"
                       rel="noopener noreferrer"
                       download={message.fileName ?? true}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-3 text-teal-200 transition hover:text-teal-100"
                     >
                       <Paperclip className="h-5 w-5 shrink-0" />
@@ -162,6 +276,42 @@ useEffect(() => {
                       </span>
                       <Download className="h-4 w-4 shrink-0" />
                     </a>
+                  ) : editingMessageId === message.id ? (
+                    <div
+                      className="min-w-64 space-y-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        className="w-full resize-y rounded-lg border border-teal-400/40 bg-[#0D1726] p-2 text-sm text-white outline-none focus:border-teal-300"
+                        rows={3}
+                        autoFocus
+                      />
+
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          disabled={isSavingEdit}
+                          onClick={() => {
+                            setEditingMessageId(null);
+                            setEditContent("");
+                          }}
+                          className="rounded-md px-3 py-1 text-xs text-gray-300 hover:bg-white/10"
+                        >
+                          Cancel
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={isSavingEdit || !editContent.trim()}
+                          onClick={() => handleSaveEdit(message.id)}
+                          className="rounded-md bg-teal-500 px-3 py-1 text-xs text-[#07111d] disabled:opacity-50"
+                        >
+                          {isSavingEdit ? "Saving..." : "Save"}
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     message.content
                   )}
@@ -200,6 +350,12 @@ useEffect(() => {
       )}
 
       <div ref={bottomRef} />
+      <DeleteMessageDialog
+        open={messageToDelete !== null}
+        isDeleting={deleteMessageMutation.isPending}
+        onCancel={() => setMessageToDelete(null)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

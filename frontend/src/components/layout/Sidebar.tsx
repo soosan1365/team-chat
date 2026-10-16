@@ -13,6 +13,7 @@ import { useRooms } from "@/src/hooks/useRooms";
 import { useJoinRoom } from "@/src/hooks/useJoinRoom";
 import { useLeaveRoom } from "@/src/hooks/useLeaveRoom";
 import { Network } from "lucide-react";
+import LeaveRoomDialog from "../chat/LeaveRoomDialog";
 type SidebarProps = {
   selectedRoomId: string | null;
   onSelectRoom: (roomId: string | null) => void;
@@ -26,7 +27,10 @@ export default function Sidebar({
   const joinRoomMutation = useJoinRoom();
   const leaveRoomMutation = useLeaveRoom();
   const [expandedRoomId, setExpandedRoomId] = useState<string | null>(null);
-
+  const [roomToLeave, setRoomToLeave] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   return (
     <aside className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-r border-[#293B55] bg-[#02050a] md:w-[320px] md:shrink-0">
       {" "}
@@ -51,7 +55,7 @@ export default function Sidebar({
         </div>
       </div>
       {/* Rooms List */}
-      <div className="flex-1 min-h-0 overflow-y-auto space-y-2 px-3 py-2">
+      <div className="flex-none min-h-0 overflow-y-auto space-y-2 px-3 py-2">
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-10">
             <div className="h-7 w-7 animate-spin rounded-full border-2 border-slate-700 border-t-teal-300" />
@@ -125,15 +129,9 @@ export default function Sidebar({
                     size="sm"
                     variant="outline"
                     disabled={leaveRoomMutation.isPending}
-                    onClick={() => {
-                      leaveRoomMutation.mutate(room.id, {
-                        onSuccess: () => {
-                          if (selectedRoomId === room.id) {
-                            onSelectRoom(null);
-                          }
-                        },
-                      });
-                    }}
+                    onClick={() =>
+                      setRoomToLeave({ id: room.id, name: room.name })
+                    }
                     className="h-8 w-[56px] shrink-0 rounded-lg border-slate-600/80 bg-slate-800/70 px-2 text-xs text-slate-300 transition-all hover:border-rose-400/40 hover:bg-rose-400/10 hover:text-rose-300 sm:px-3"
                   >
                     {isLeaving ? "Leaving..." : "Leave"}
@@ -205,7 +203,7 @@ export default function Sidebar({
         )}
       </div>
       {/* Workspace Footer */}
-      <div className="mt-auto shrink-0 border-t border-slate-700/60 p-2 sm:p-3">
+      <div className="mt-auto hidden md:block  shrink-0 border-t border-slate-700/60 p-2 sm:p-3">
         <div className="flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-900/ p-2">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-300/15 bg-teal-300/10 text-teal-200">
             <Network className="h-5 w-5" />{" "}
@@ -221,6 +219,28 @@ export default function Sidebar({
           <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-teal-300" />
         </div>
       </div>
+      <LeaveRoomDialog
+        open={roomToLeave !== null}
+        roomName={roomToLeave?.name ?? ""}
+        isPending={leaveRoomMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open && !leaveRoomMutation.isPending) {
+            setRoomToLeave(null);
+          }
+        }}
+        onConfirm={() => {
+          if (!roomToLeave) return;
+
+          leaveRoomMutation.mutate(roomToLeave.id, {
+            onSuccess: () => {
+              if (selectedRoomId === roomToLeave.id) {
+                onSelectRoom(null);
+              }
+              setRoomToLeave(null);
+            },
+          });
+        }}
+      />
     </aside>
   );
 }

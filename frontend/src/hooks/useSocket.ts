@@ -25,18 +25,24 @@ export function useSocket(roomId: string) {
       socket.emit("join-room", roomId);
     };
 
-    const handleNewMessage = (newMessage: Message) => {
-      queryClient.setQueryData<Message[]>(
-        ["messages", roomId],
-        (oldMessages = []) => {
-          if (oldMessages.some((message) => message.id === newMessage.id)) {
-            return oldMessages;
-          }
-
-          return [...oldMessages, newMessage];
-        },
+   const handleNewMessage = (newMessage: Message) => {
+  queryClient.setQueryData<Message[]>(
+    ["messages", roomId],
+    (oldMessages = []) => {
+      const exists = oldMessages.some(
+        (message) => message.id === newMessage.id,
       );
-    };
+
+      if (exists) {
+        return oldMessages.map((message) =>
+          message.id === newMessage.id ? newMessage : message,
+        );
+      }
+
+      return [...oldMessages, newMessage];
+    },
+  );
+};
 
     socket.on("connect", handleConnect);
     socket.on("new-message", handleNewMessage);

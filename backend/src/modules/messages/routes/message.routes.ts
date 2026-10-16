@@ -1,12 +1,18 @@
 // تعیین آدرس‌های API برای دریافت و ارسال پیام
 import { Router } from "express";
-import { getRoomMessagesController, getUnreadMessagesCountController, markRoomAsReadController } from "../controllers/message.controller.js";
-import { createMessageController } from "../controllers/message.controller.js";
+import {
+  getRoomMessagesController,
+  getUnreadMessagesCountController,
+  markRoomAsReadController,
+  createMessageController,
+  createAudioMessageController,
+  createAttachmentMessageController,
+  updateMessageController,
+  deleteMessageController,
+} from "../controllers/message.controller.js";
 import { authenticateToken } from "../../../middlewares/auth.middleware.js";
 import { uploadAudio } from "../../../middlewares/upload.middleware.js";
-import { createAudioMessageController } from "../controllers/message.controller.js";
 import { uploadAttachment } from "../../../middlewares/upload.middleware.js";
-import { createAttachmentMessageController } from "../controllers/message.controller.js";
 
 const router = Router();
 
@@ -19,6 +25,11 @@ router.post(
   "/rooms/:roomId/messages",
   authenticateToken,
   createMessageController,
+);
+router.patch(
+  "/rooms/:roomId/messages/:messageId",
+  authenticateToken,
+  updateMessageController,
 );
 router.post(
   "/rooms/:roomId/audio",
@@ -36,6 +47,11 @@ router.patch(
   "/rooms/:roomId/read",
   authenticateToken,
   markRoomAsReadController,
+);
+router.delete(
+  "/rooms/:roomId/messages/:messageId",
+  authenticateToken,
+  deleteMessageController,
 );
 router.get(
   "/messages/unread-count",

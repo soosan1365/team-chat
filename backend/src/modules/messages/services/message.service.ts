@@ -10,7 +10,16 @@ export async function getRoomMessages(roomId: string) {
           id: true,
           name: true,
         },
+      },replyTo: {
+  include: {
+    user: {
+      select: {
+        id: true,
+        name: true,
       },
+    },
+  },
+},
     },
     orderBy: {
       createdAt: "asc",
@@ -26,6 +35,7 @@ type CreateMessageInput = {
   audioUrl?: string | null;
   fileUrl?: string | null;
 fileName?: string | null;
+replyToId?: string | null;
 };
 
 export async function createMessage(input: CreateMessageInput) {
@@ -38,12 +48,65 @@ export async function createMessage(input: CreateMessageInput) {
       audioUrl: input.audioUrl ?? null,
       fileUrl: input.fileUrl ?? null,
       fileName: input.fileName ?? null,
+      replyToId: input.replyToId ?? null,
     },
+   include: {
+  user: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  replyTo: {
     include: {
       user: {
         select: {
           id: true,
           name: true,
+        },
+      },
+    },
+  },
+},
+  });
+}
+export async function updateMessage(
+  messageId: string,
+  userId: string,
+  roomId: string,
+  content: string,
+) {
+  const message = await prisma.message.findFirst({
+    where: {
+      id: messageId,
+      userId,
+      roomId,
+      type: "text",
+    },
+  });
+
+  if (!message) {
+    throw new Error("Message not found or unauthorized");
+  }
+
+  return prisma.message.update({
+    where: { id: messageId },
+    data: { content },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      replyTo: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -90,4 +153,30 @@ export async function getUnreadMessagesCount(userId: string) {
   );
 
   return counts.reduce((total, count) => total + count, 0);
+}
+export async function deleteMessage(
+  messageId: string,
+  userId: string,
+  roomId: string,
+) {
+  const message = await prisma.message.findFirst({
+    where: {
+      id: messageId,
+      userId,
+      roomId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!message) {
+    throw new Error("Message not found or unauthorized");
+  }
+
+  return prisma.message.delete({
+    where: {
+      id: messageId,
+    },
+  });
 }

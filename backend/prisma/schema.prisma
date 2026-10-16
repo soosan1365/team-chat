@@ -42,6 +42,7 @@ model RoomMember {
   @@id([userId, roomId])
 }
 
+
 model Message {
   id        String   @id @default(cuid())
   content   String
@@ -53,8 +54,13 @@ model Message {
   fileUrl   String?
   fileName  String?
 
+  replyToId String?
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("MessageReplies")
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId, createdAt])
+  @@index([replyToId])
 }

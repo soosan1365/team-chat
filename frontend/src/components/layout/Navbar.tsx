@@ -56,17 +56,6 @@ export default function Navbar() {
         </div>
       </button>
 
-      {/* Search */}
-      <div className="relative hidden w-full max-w-sm flex-1 md:block">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-
-        <Input
-          placeholder="Search messages, people..."
-          aria-label="Search messages and people"
-          className="h-10 rounded-xl border-slate-700/80 bg-slate-800/60 pl-10 text-sm text-slate-100 placeholder:text-slate-500 transition-all focus-visible:border-teal-400/70 focus-visible:ring-2 focus-visible:ring-teal-400/20"
-        />
-      </div>
-
       {/* Actions and profile */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <Button

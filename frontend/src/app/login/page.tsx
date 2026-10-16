@@ -27,7 +27,8 @@ export default function LoginPage() {
         email,
         password,
       });
-
+      setEmail("");
+      setPassword("");
       router.push("/");
       router.refresh();
     } catch (err) {
