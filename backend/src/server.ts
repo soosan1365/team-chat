@@ -13,10 +13,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://team-chat-jz7u.vercel.app",
-    ],
+    origin: ["http://localhost:3000", "https://team-chat-jz7u.vercel.app"],
     credentials: true,
   },
 });
@@ -89,8 +86,10 @@ async function startServer() {
   try {
     await createDefaultRooms();
 
-    httpServer.listen(4000, () => {
-      console.log("Server running on http://localhost:4000");
+    const PORT = Number(process.env.PORT) || 4000;
+
+    httpServer.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
