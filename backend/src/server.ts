@@ -18,6 +18,8 @@ const io = new Server(httpServer, {
       "https://team-chat-jz7u.vercel.app",
       "https://team-chat-jz7u-git-main-soosan1365s-projects.vercel.app",
       "https://team-chat-jz7u-5qwm5yoc6-soosan1365s-projects.vercel.app",
+            "https://team-chat-zeta.vercel.app",
+
     ],
     credentials: true,
   },
