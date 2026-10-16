@@ -8,7 +8,10 @@ import authRoutes from "./modules/auth/routes/auth.routes.js";
 import path from "node:path";
 import cookieParser from "cookie-parser";
 const app = express();
-
+app.use((req, _res, next) => {
+  console.log("Incoming request:", req.method, req.path);
+  next();
+});
 app.use(
   cors({
     origin: [
