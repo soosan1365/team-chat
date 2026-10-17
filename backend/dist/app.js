@@ -8,14 +8,17 @@ import authRoutes from "./modules/auth/routes/auth.routes.js";
 import path from "node:path";
 import cookieParser from "cookie-parser";
 const app = express();
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
-          "https://team-chat-zeta.vercel.app",
-
+    origin: [
+      "http://localhost:3000",
+      "https://team-chat-jz7u.vercel.app",
+    ],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/rooms", roomRoutes);
