@@ -1,0 +1,7 @@
+﻿{
+  "name": "team-chat-deploy",
+  "private": true,
+  "scripts": {
+    "start": "cd backend && npm install && npm run build && npm start"
+  }
+}
