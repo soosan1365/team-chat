@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Team Chat
+
+A real-time team communication application built with Next.js, TypeScript, Node.js, and Socket.IO.
+
+## Features
+
+- User registration, login, and authentication using JWT stored in HTTP-only cookies
+- Real-time messaging with Socket.IO
+- Chat rooms with membership management
+- Unread message counts and read tracking
+- Audio messages and file attachments
+- Reply, edit, delete, and copy message actions
+- Responsive chat interface
+- Protected actions for authenticated users and room members
+
+## Tech Stack
+
+### Frontend
+- Next.js
+- React and TypeScript
+- TanStack Query
+- Tailwind CSS
+- shadcn/ui
+- Socket.IO Client
+
+### Backend
+- Node.js and Express
+- TypeScript
+- Socket.IO
+- PostgreSQL
+- Prisma ORM
+- JWT and bcrypt
+- Multer for file uploads
+
+## Architecture
+
+The application is organized into two separate applications:
+
+- `frontend/` — the Next.js client application
+- `backend/` — the Express API, authentication, database access, and real-time communication
+
+The frontend communicates with the backend through HTTP APIs and Socket.IO. PostgreSQL stores application data, accessed through Prisma.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js
+- npm
+- PostgreSQL database
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/soosan1365/team-chat.git
+cd team-chat
+```
+
+### 2. Configure the backend
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the backend directory and configure the required environment variables for your database connection, authentication secret, and server settings.
+
+### 3. Start the backend
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Configure the frontend
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open a second terminal:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd frontend
+npm install
+```
 
-## Learn More
+Create a `.env.local` file and configure the API and Socket.IO server URLs to point to your running backend.
 
-To learn more about Next.js, take a look at the following resources:
+### 5. Start the frontend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+> Database initialization and migrations must be completed according to the Prisma configuration before using the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Passwords are hashed before storage.
+- Authentication uses HTTP-only cookies.
+- Protected operations require authentication and appropriate room membership.
+- Environment variables and secrets should never be committed to the repository.
+
+## Project Purpose
+
+This project was built as a portfolio project to demonstrate full-stack development, real-time communication, authentication, database integration, and maintainable application architecture.
+
+## Author
+
+**Soosan Arabdashti**
+
+GitHub: [@soosan1365](https://github.com/soosan1365)

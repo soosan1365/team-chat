@@ -1,12 +1,8 @@
-
 import type { Request, Response } from "express";
 import { registerUser } from "../services/auth.service.js";
 import { loginUser } from "../services/auth.service.js";
 import { prisma } from "../../../lib/prisma.js";
-export async function registerController(
-  req: Request,
-  res: Response,
-) {
+export async function registerController(req: Request, res: Response) {
   try {
     const { name, email, password } = req.body;
 
@@ -19,7 +15,8 @@ export async function registerController(
       password.length < 8
     ) {
       res.status(400).json({
-        message: "Name, valid email, and password of at least 8 characters are required",
+        message:
+          "Name, valid email, and password of at least 8 characters are required",
       });
       return;
     }
@@ -32,10 +29,7 @@ export async function registerController(
 
     res.status(201).json(user);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message === "EMAIL_ALREADY_EXISTS"
-    ) {
+    if (error instanceof Error && error.message === "EMAIL_ALREADY_EXISTS") {
       res.status(409).json({ message: "Email already exists" });
       return;
     }
@@ -45,11 +39,7 @@ export async function registerController(
   }
 }
 
-
-export async function loginController(
-  req: Request,
-  res: Response,
-) {
+export async function loginController(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
 
@@ -69,36 +59,30 @@ export async function loginController(
       email: email.trim().toLowerCase(),
       password,
     });
+    res.cookie("accessToken", result.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
 
-res.cookie("accessToken", result.token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  path: "/",
-});
+    res.json({
+      user: result.user,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "INVALID_CREDENTIALS") {
+      res.status(401).json({
+        message: "Invalid email or password",
+      });
+      return;
+    }
 
-res.json({
-  user: result.user,
-});  } catch (error) {
-   if (
-  error instanceof Error &&
-  error.message === "INVALID_CREDENTIALS"
-) {
-  res.status(401).json({
-    message: "Invalid email or password",
-  });
-  return;
-}
-
-console.error("Login failed:", error);
-res.status(500).json({ message: "Login failed" });
+    console.error("Login failed:", error);
+    res.status(500).json({ message: "Login failed" });
   }
 }
 
-export async function meController(
-  req: Request,
-  res: Response,
-) {
+export async function meController(req: Request, res: Response) {
   try {
     if (!req.userId) {
       res.status(401).json({ message: "Authentication required" });
@@ -126,15 +110,11 @@ export async function meController(
   }
 }
 
-
-export function logoutController(
-  _req: Request,
-  res: Response,
-) {
+export function logoutController(_req: Request, res: Response) {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
   });
 
