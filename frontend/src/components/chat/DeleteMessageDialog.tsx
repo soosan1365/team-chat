@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Trash2, X } from "lucide-react";
@@ -50,7 +49,8 @@ export default function DeleteMessageDialog({
         </h2>
 
         <p className="mt-2 text-sm leading-6 text-slate-400">
-Are you sure you want to delete this message?        </p>
+          Are you sure you want to delete this message?{" "}
+        </p>
 
         <div className="mt-6 flex justify-end gap-3">
           <button
