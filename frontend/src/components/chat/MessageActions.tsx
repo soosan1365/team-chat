@@ -1,14 +1,6 @@
-
 "use client";
 
-import {
-  Copy,
-  Reply,
-  Pencil,
-  Trash2,
-  Forward,
-  MoreHorizontal,
-} from "lucide-react";
+import { Copy, Reply, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +10,6 @@ type MessageActionsProps = {
   onReply: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onForward: () => void;
 };
 
 export default function MessageActions({
@@ -27,7 +18,6 @@ export default function MessageActions({
   onReply,
   onEdit,
   onDelete,
-  onForward,
 }: MessageActionsProps) {
   return (
     <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] p-1">
@@ -51,17 +41,6 @@ export default function MessageActions({
         className="h-8 w-8 text-slate-300 hover:bg-slate-700 hover:text-white"
       >
         <Reply className="h-4 w-4" />
-      </Button>
-
-      <Button
-        type="button"
-        size="icon"
-        variant="ghost"
-        title="Forward"
-        onClick={onForward}
-        className="h-8 w-8 text-slate-300 hover:bg-slate-700 hover:text-white"
-      >
-        <Forward className="h-4 w-4" />
       </Button>
 
       {isMe && (

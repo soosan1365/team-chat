@@ -1,19 +1,18 @@
 "use client";
 
-import { CheckCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRoomMessages } from "@/src/hooks/useRoomMessages";
 import { useRooms } from "@/src/hooks/useRooms";
 import { useSocket } from "@/src/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
-import { Paperclip, Download } from "lucide-react";
+import { Paperclip, Download, CheckCheck } from "lucide-react";
 import ChatStatus from "./ChatStatus";
 import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
 import MessageActions from "./MessageActions";
-import { useQueryClient } from "@tanstack/react-query";
-import { updateMessage, type Message } from "@/src/services/message.service";
 import { useDeleteMessage } from "@/src/hooks/useDeleteMessage";
 import DeleteMessageDialog from "./DeleteMessageDialog";
+import { useEditMessage } from "@/src/hooks/useEditMessage";
+
 type MessageListProps = {
   roomId: string;
   userId: string;
@@ -25,39 +24,67 @@ export default function MessageList({
   userId,
   onReply,
 }: MessageListProps) {
-  const queryClient = useQueryClient();
-
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
-  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const editMessageMutation = useEditMessage();
   const deleteMessageMutation = useDeleteMessage();
-  const handleSaveEdit = async (messageId: string) => {
+  const { mutate: markAsRead } = useMarkRoomAsRead();
+  const { data: rooms, isLoading: isLoadingRooms } = useRooms();
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+
+  const currentRoom = rooms?.find((room) => room.id === roomId);
+  const isMember = currentRoom?.isMember ?? false;
+  const {
+    data: messages,
+    isLoading,
+    isError,
+  } = useRoomMessages(roomId, Boolean(isMember));
+
+  useSocket(isMember ? roomId : "");
+
+  useEffect(() => {
+    if (isLoading || isLoadingRooms || isError || !isMember) return;
+
+    markAsRead(roomId);
+  }, [roomId, isLoading, isLoadingRooms, isError, isMember, markAsRead]);
+
+  useEffect(() => {
+    if (isLoading || isLoadingRooms || !isMember) return;
+
+    bottomRef.current?.scrollIntoView({
+      behavior: "instant",
+      block: "end",
+    });
+  }, [isLoading, isLoadingRooms, isMember, messages]);
+
+  useEffect(() => {
+  setEditingMessageId(null);
+  setEditContent("");
+  setActiveMessageId(null);
+  setMessageToDelete(null);
+}, [roomId]);
+  const handleSaveEdit = (messageId: string) => {
     const content = editContent.trim();
 
     if (!content || !isMember) return;
 
-    try {
-      setIsSavingEdit(true);
-
-      const updatedMessage = await updateMessage(roomId, messageId, content);
-
-      queryClient.setQueryData<Message[]>(
-        ["messages", roomId],
-        (oldMessages = []) =>
-          oldMessages.map((message) =>
-            message.id === updatedMessage.id ? updatedMessage : message,
-          ),
-      );
-
-      setEditingMessageId(null);
-      setEditContent("");
-      setActiveMessageId(null);
-    } catch (error) {
-      console.error("Failed to edit message:", error);
-    } finally {
-      setIsSavingEdit(false);
-    }
+    editMessageMutation.mutate(
+      { roomId, messageId, content },
+      {
+        onSuccess: () => {
+          setEditingMessageId(null);
+          setEditContent("");
+          setActiveMessageId(null);
+        },
+        onError: (error) => {
+          console.error("Failed to edit message:", error);
+        },
+      },
+    );
   };
+
   const handleDelete = (messageId: string) => {
     if (!isMember) return;
     setMessageToDelete(messageId);
@@ -78,38 +105,6 @@ export default function MessageList({
       },
     );
   };
-  const { data: rooms, isLoading: isLoadingRooms } = useRooms();
-  const currentRoom = rooms?.find((room) => room.id === roomId);
-  const isMember = currentRoom?.isMember;
-
-  const {
-    data: messages,
-    isLoading,
-    isError,
-  } = useRoomMessages(roomId, Boolean(isMember));
-  const markRoomAsRead = useMarkRoomAsRead();
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
-  const [replyingTo, setReplyingTo] = useState<{
-    id: string;
-    content: string;
-    senderName: string;
-  } | null>(null);
-  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
-  useSocket(isMember ? roomId : "");
-  useEffect(() => {
-    if (isLoading || isLoadingRooms || isError || !isMember) return;
-
-    markRoomAsRead.mutate(roomId);
-  }, [roomId, isLoading, isLoadingRooms, isError, isMember]);
-  useEffect(() => {
-    if (isLoading || isLoadingRooms || !isMember) return;
-
-    bottomRef.current?.scrollIntoView({
-      behavior: "instant",
-      block: "end",
-    });
-  }, [isLoading, isLoadingRooms, isMember, messages]);
 
   if (!roomId) {
     return (
@@ -189,7 +184,7 @@ export default function MessageList({
             >
               {!isMe && (
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className= " bg-cyan-300 text-xs text-[#0D1726]">
+                  <AvatarFallback className=" bg-cyan-300 text-xs text-[#0D1726]">
                     {message.user.name?.slice(0, 2).toUpperCase() ?? "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -226,7 +221,6 @@ export default function MessageList({
                       setActiveMessageId(null);
                     }}
                     onDelete={() => handleDelete(message.id)}
-                    onForward={() => {}}
                   />
                 )}
 
@@ -256,6 +250,7 @@ export default function MessageList({
                   )}
                   {message.type === "audio" && message.audioUrl ? (
                     <audio
+                      onClick={(e) => e.stopPropagation()}
                       controls
                       preload="metadata"
                       src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${message.audioUrl}`}
@@ -292,7 +287,7 @@ export default function MessageList({
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          disabled={isSavingEdit}
+                          disabled={editMessageMutation.isPending}
                           onClick={() => {
                             setEditingMessageId(null);
                             setEditContent("");
@@ -304,11 +299,13 @@ export default function MessageList({
 
                         <button
                           type="button"
-                          disabled={isSavingEdit || !editContent.trim()}
+                          disabled={
+                            editMessageMutation.isPending || !editContent.trim()
+                          }
                           onClick={() => handleSaveEdit(message.id)}
                           className="rounded-md bg-teal-500 px-3 py-1 text-xs text-[#07111d] disabled:opacity-50"
                         >
-                          {isSavingEdit ? "Saving..." : "Save"}
+                          {editMessageMutation.isPending ? "Saving..." : "Save"}
                         </button>
                       </div>
                     </div>

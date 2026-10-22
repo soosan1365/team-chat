@@ -7,14 +7,15 @@ import { socket } from "../lib/socket";
 
 type Message = {
   id: string;
-  content: string;
-  userId: string;
-  roomId: string;
-  createdAt: string;
-  user: {
+  content?: string;
+  userId?: string;
+  roomId?: string;
+  createdAt?: string;
+  user?: {
     id: string;
     name: string | null;
   };
+  deleted?: boolean;
 };
 
 export function useSocket(roomId: string) {
@@ -25,21 +26,25 @@ export function useSocket(roomId: string) {
       socket.emit("join-room", roomId);
     };
 
-   const handleNewMessage = (newMessage: Message) => {
+ const handleNewMessage = (event: Message | { id: string; deleted: true }) => {
   queryClient.setQueryData<Message[]>(
     ["messages", roomId],
     (oldMessages = []) => {
+      if ("deleted" in event && event.deleted) {
+        return oldMessages.filter((message) => message.id !== event.id);
+      }
+
       const exists = oldMessages.some(
-        (message) => message.id === newMessage.id,
+        (message) => message.id === event.id,
       );
 
       if (exists) {
         return oldMessages.map((message) =>
-          message.id === newMessage.id ? newMessage : message,
+          message.id === event.id ? event : message,
         );
       }
 
-      return [...oldMessages, newMessage];
+      return [...oldMessages, event];
     },
   );
 };
