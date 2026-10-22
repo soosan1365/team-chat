@@ -38,18 +38,16 @@ export default function MessageInput({
     startRecording,
     stopRecording,
   } = useAudioRecording();
-  const isDisabled = !isMember || isUploading || isSendingMessage;
   const uploadAttachmentMutation = useUploadAttachment(roomId);
 
+  const isBusy =
+    isUploading || isSendingMessage || uploadAttachmentMutation.isPending;
+
+  const isDisabled = !isMember || isBusy;
+
   function handleRecording() {
-    if (
-      !isMember ||
-      isUploading ||
-      isSendingMessage ||
-      uploadAttachmentMutation.isPending
-    ) {
-      return;
-    }
+    if (isDisabled) return;
+
     if (isRecording && mediaRecorder) {
       stopRecording();
       return;
@@ -73,15 +71,7 @@ export default function MessageInput({
   }
 
   async function handleSendClick() {
-    if (
-      !isMember ||
-      isUploading ||
-      isSendingMessage ||
-      uploadAttachmentMutation.isPending
-    ) {
-      return;
-    }
-
+    if (isDisabled) return;
     if (selectedFile) {
       try {
         await uploadAttachmentMutation.mutateAsync(selectedFile);
