@@ -7,6 +7,7 @@ import { useAudioRecording } from "@/src/hooks/chat/useAudioRecording";
 import { useSendMessage } from "@/src/hooks/messages/useSendMessage";
 import EmojiPicker from "./EmojiPicker";
 import { useUploadAttachment } from "@/src/hooks/messages/useUploadAttachment";
+import { useUploadAudio } from "@/src/hooks/messages/useUploadAudio";
 type ReplyMessage = {
   id: string;
   content: string;
@@ -31,17 +32,15 @@ export default function MessageInput({
   const [showEmojis, setShowEmojis] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const {
-    isRecording,
-    mediaRecorder,
-    isUploading,
-    startRecording,
-    stopRecording,
-  } = useAudioRecording();
+  const uploadAudioMutation = useUploadAudio(roomId);
+  const { isRecording, mediaRecorder, startRecording, stopRecording } =
+    useAudioRecording((blob) => uploadAudioMutation.mutateAsync(blob));
   const uploadAttachmentMutation = useUploadAttachment(roomId);
 
   const isBusy =
-    isUploading || isSendingMessage || uploadAttachmentMutation.isPending;
+    uploadAudioMutation.isPending ||
+    isSendingMessage ||
+    uploadAttachmentMutation.isPending;
 
   const isDisabled = !isMember || isBusy;
 
@@ -53,11 +52,11 @@ export default function MessageInput({
       return;
     }
 
-    startRecording(roomId);
+    startRecording();
   }
 
   async function handleSend() {
-    if (!isMember || isUploading || isSendingMessage) return;
+    if (!isMember || isSendingMessage) return;
 
     const content = message.trim();
     if (!content) return;

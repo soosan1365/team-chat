@@ -1,17 +1,7 @@
 // مسئول گرفتن تاریخچه پیام‌ها و ارسال پیام به بک‌اند
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api`;
 import type { Message } from "@/src/types/message";
-
-
-async function parseResponse<T>(response: Response): Promise<T> {
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new Error(data?.message ?? "Request failed");
-  }
-
-  return data as T;
-}
+import { parseResponse } from "@/src/services/api";
 
 export async function getRoomMessages(roomId: string): Promise<Message[]> {
   const response = await fetch(`${API_URL}/rooms/${roomId}/messages`, {
@@ -68,9 +58,7 @@ export async function markRoomAsRead(roomId: string): Promise<void> {
     credentials: "include",
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to mark room as read");
-  }
+  await parseResponse<void>(response);
 }
 export async function getUnreadMessagesCount(): Promise<number> {
   const response = await fetch(`${API_URL}/messages/unread-count`, {
@@ -93,8 +81,5 @@ export async function deleteMessage(
     },
   );
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.message ?? "Failed to delete message");
-  }
+  await parseResponse<void>(response);
 }
