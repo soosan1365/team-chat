@@ -28,8 +28,6 @@ export default function MessageInput({
   const [message, setMessage] = useState("");
   const { sendMessage, isSendingMessage } = useSendMessage();
   const [showEmojis, setShowEmojis] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {
@@ -56,40 +54,32 @@ export default function MessageInput({
       return;
     }
 
-    if (audioUrl) {
-      URL.revokeObjectURL(audioUrl);
-      setAudioUrl(null);
-    }
     startRecording(roomId);
   }
 
- async function handleSend() {
-  if (!isMember || isUploading || isSendingMessage) return;
+  async function handleSend() {
+    if (!isMember || isUploading || isSendingMessage) return;
 
-  const content = message.trim();
-  if (!content) return;
+    const content = message.trim();
+    if (!content) return;
 
-  const success = await sendMessage(
-    content,
-    roomId,
-    replyingTo?.id ?? null,
-  );
+    const success = await sendMessage(content, roomId, replyingTo?.id ?? null);
 
-  if (success) {
-    setMessage("");
-    onCancelReply();
+    if (success) {
+      setMessage("");
+      onCancelReply();
+    }
   }
-}
 
   async function handleSendClick() {
-   if (
-  !isMember ||
-  isUploading ||
-  isSendingMessage ||
-  uploadAttachmentMutation.isPending
-) {
-  return;
-}
+    if (
+      !isMember ||
+      isUploading ||
+      isSendingMessage ||
+      uploadAttachmentMutation.isPending
+    ) {
+      return;
+    }
 
     if (selectedFile) {
       try {
