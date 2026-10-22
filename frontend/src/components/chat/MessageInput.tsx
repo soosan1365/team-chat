@@ -3,9 +3,9 @@ import { useRef, useState } from "react";
 import { Paperclip, Smile, Send, Mic, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createMessage } from "@/src/services/message.service";
 import { useUploadAttachment } from "@/src/hooks/useUploadAttachment";
 import { useAudioRecording } from "@/src/hooks/useAudioRecording";
+import { useSendMessage } from "@/src/hooks/useSendMessage";
 type ReplyMessage = {
   id: string;
   content: string;
@@ -26,7 +26,7 @@ export default function MessageInput({
   onCancelReply,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const { sendMessage, isSendingMessage } = useSendMessage();
   const [showEmojis, setShowEmojis] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
@@ -43,14 +43,14 @@ export default function MessageInput({
   const uploadAttachmentMutation = useUploadAttachment(roomId);
 
   function handleRecording() {
-if (
-  !isMember ||
-  isUploading ||
-  isSendingMessage ||
-  uploadAttachmentMutation.isPending
-) {
-  return;
-}
+    if (
+      !isMember ||
+      isUploading ||
+      isSendingMessage ||
+      uploadAttachmentMutation.isPending
+    ) {
+      return;
+    }
     if (isRecording && mediaRecorder) {
       stopRecording();
       return;
@@ -63,32 +63,33 @@ if (
     startRecording(roomId);
   }
 
-  async function handleSend() {
-    if (!isMember || isUploading || isSendingMessage) return;
-    const content = message.trim();
-    if (!content) return;
+ async function handleSend() {
+  if (!isMember || isUploading || isSendingMessage) return;
 
-    try {
-      setIsSendingMessage(true);
-      await createMessage({
-        content,
-        roomId,
-        replyToId: replyingTo?.id ?? null,
-      });
+  const content = message.trim();
+  if (!content) return;
 
-      setMessage("");
-      onCancelReply();
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsSendingMessage(false);
-    }
+  const success = await sendMessage(
+    content,
+    roomId,
+    replyingTo?.id ?? null,
+  );
+
+  if (success) {
+    setMessage("");
+    onCancelReply();
   }
+}
 
   async function handleSendClick() {
-    if (!isMember || isUploading || uploadAttachmentMutation.isPending) {
-      return;
-    }
+   if (
+  !isMember ||
+  isUploading ||
+  isSendingMessage ||
+  uploadAttachmentMutation.isPending
+) {
+  return;
+}
 
     if (selectedFile) {
       try {
