@@ -9,6 +9,7 @@ export function useSocket(roomId: string) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (!roomId) return;
     const handleConnect = () => {
       socket.emit("join-room", roomId);
     };
