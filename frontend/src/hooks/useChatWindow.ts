@@ -10,13 +10,9 @@ export function useChatWindow(selectedRoomId: string | null) {
     senderName: string;
   } | null>(null);
 
-  const currentRoom = rooms?.find(
-    (room) => room.id === selectedRoomId
-  );
+  const currentRoom = rooms?.find((room) => room.id === selectedRoomId);
 
   const isMember = currentRoom?.isMember ?? false;
-
-
 
   useEffect(() => {
     setReplyingTo(null);

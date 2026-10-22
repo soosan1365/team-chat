@@ -20,8 +20,6 @@ export default function ChatHeader({ roomId }: ChatHeaderProps) {
           <p className="text-xs text-gray-400">Team room</p>
         </div>
       </div>
-
-      <div className="flex items-center gap-1"></div>
     </header>
   );
 }
