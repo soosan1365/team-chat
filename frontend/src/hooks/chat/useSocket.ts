@@ -3,8 +3,8 @@
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { socket } from "../lib/socket";
 import type { Message } from "@/src/types/message";
+import { socket } from "@/src/lib/socket";
 export function useSocket(roomId: string) {
   const queryClient = useQueryClient();
 

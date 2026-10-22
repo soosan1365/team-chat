@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRooms } from "@/src/hooks/useRooms";
+import { useRooms } from "@/src/hooks/rooms/useRooms";
 
 export function useChatWindow(selectedRoomId: string | null) {
   const { data: rooms } = useRooms();

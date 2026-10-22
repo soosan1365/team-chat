@@ -1,12 +1,11 @@
 "use client";
 
-import { useCurrentUser } from "@/src/hooks/useCurrentUse";
-import { useLogout } from "@/src/hooks/useLogout";
+import { useCurrentUser } from "@/src/hooks/auth/useCurrentUse";
+import { useLogout } from "@/src/hooks/auth/useLogout";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bell, Search, MessageCircle, LogOut } from "lucide-react";
-import { useUnreadMessagesCount } from "@/src/hooks/useUnreadMessagesCount";
+import { Bell, MessageCircle, LogOut } from "lucide-react";
+import { useUnreadMessagesCount } from "@/src/hooks/messages/useUnreadMessagesCount";
 
 export default function Navbar() {
   const router = useRouter();

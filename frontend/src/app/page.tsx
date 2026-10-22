@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import ChatWindow from "../components/chat/ChatWindow";
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
-import { useCurrentUser } from "../hooks/useCurrentUse";
 import ChatStatus from "../components/chat/ChatStatus";
+import { useCurrentUser } from "../hooks/auth/useCurrentUse";
 
 export default function Home() {
   const router = useRouter();

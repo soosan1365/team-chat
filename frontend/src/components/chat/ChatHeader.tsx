@@ -1,6 +1,6 @@
 "use client";
 
-import { useRooms } from "@/src/hooks/useRooms";
+import { useRooms } from "@/src/hooks/rooms/useRooms";
 
 type ChatHeaderProps = {
   roomId: string;

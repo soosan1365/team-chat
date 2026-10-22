@@ -3,7 +3,7 @@
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
-import { useChatWindow } from "@/src/hooks/useChatWindow";
+import { useChatWindow } from "@/src/hooks/chat/useChatWindow";
 
 type ChatWindowProps = {
   selectedRoomId: string | null;

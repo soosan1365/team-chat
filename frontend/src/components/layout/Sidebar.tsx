@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useRooms } from "@/src/hooks/useRooms";
-import { useJoinRoom } from "@/src/hooks/useJoinRoom";
-import { useLeaveRoom } from "@/src/hooks/useLeaveRoom";
+import { useRooms } from "@/src/hooks/rooms/useRooms";
+import { useJoinRoom } from "@/src/hooks/rooms/useJoinRoom";
+import { useLeaveRoom } from "@/src/hooks/rooms/useLeaveRoom";
 import { Network } from "lucide-react";
 import LeaveRoomDialog from "../chat/LeaveRoomDialog";
 type SidebarProps = {

@@ -1,14 +1,14 @@
 "use client";
 
-import { useRoomMessages } from "@/src/hooks/useRoomMessages";
-import { useRooms } from "@/src/hooks/useRooms";
-import { useSocket } from "@/src/hooks/useSocket";
+import { useRoomMessages } from "@/src/hooks/messages/useRoomMessages";
+import { useRooms } from "@/src/hooks/rooms/useRooms";
+import { useSocket } from "@/src/hooks/chat/useSocket";
 import { useEffect, useRef, useState } from "react";
 import ChatStatus from "./ChatStatus";
-import { useMarkRoomAsRead } from "@/src/hooks/useMarkRoomAsRead";
-import { useDeleteMessage } from "@/src/hooks/useDeleteMessage";
+import { useMarkRoomAsRead } from "@/src/hooks/rooms/useMarkRoomAsRead";
+import { useDeleteMessage } from "@/src/hooks/messages/useDeleteMessage";
 import DeleteMessageDialog from "./DeleteMessageDialog";
-import { useEditMessage } from "@/src/hooks/useEditMessage";
+import { useEditMessage } from "@/src/hooks/messages/useEditMessage";
 import MessageItem from "./MessageItem";
 
 type MessageListProps = {

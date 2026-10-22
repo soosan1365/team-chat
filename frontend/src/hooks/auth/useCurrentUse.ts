@@ -1,5 +1,5 @@
+import { getCurrentUser } from "@/src/services/auth.service";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "../services/auth.service";
 
 export const authKeys = {
   currentUser: ["auth", "me"] as const,

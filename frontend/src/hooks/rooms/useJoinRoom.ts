@@ -1,5 +1,5 @@
+import { joinRoom } from "@/src/services/room.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { joinRoom } from "../services/room.service";
 
 export function useJoinRoom() {
   const queryClient = useQueryClient();

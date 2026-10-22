@@ -1,5 +1,5 @@
+import { getUnreadMessagesCount } from "@/src/services/message.service";
 import { useQuery } from "@tanstack/react-query";
-import { getUnreadMessagesCount } from "../services/message.service";
 
 export function useUnreadMessagesCount() {
   return useQuery({

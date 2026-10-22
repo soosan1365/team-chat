@@ -3,10 +3,10 @@ import { useRef, useState } from "react";
 import { Paperclip, Smile, Send, Mic, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUploadAttachment } from "@/src/hooks/useUploadAttachment";
-import { useAudioRecording } from "@/src/hooks/useAudioRecording";
-import { useSendMessage } from "@/src/hooks/useSendMessage";
+import { useAudioRecording } from "@/src/hooks/chat/useAudioRecording";
+import { useSendMessage } from "@/src/hooks/messages/useSendMessage";
 import EmojiPicker from "./EmojiPicker";
+import { useUploadAttachment } from "@/src/hooks/messages/useUploadAttachment";
 type ReplyMessage = {
   id: string;
   content: string;
