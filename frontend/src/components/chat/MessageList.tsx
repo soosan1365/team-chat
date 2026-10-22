@@ -12,6 +12,7 @@ import MessageActions from "./MessageActions";
 import { useDeleteMessage } from "@/src/hooks/useDeleteMessage";
 import DeleteMessageDialog from "./DeleteMessageDialog";
 import { useEditMessage } from "@/src/hooks/useEditMessage";
+import { API_URL } from "@/src/lib/config";
 
 type MessageListProps = {
   roomId: string;
@@ -60,11 +61,11 @@ export default function MessageList({
   }, [isLoading, isLoadingRooms, isMember, messages]);
 
   useEffect(() => {
-  setEditingMessageId(null);
-  setEditContent("");
-  setActiveMessageId(null);
-  setMessageToDelete(null);
-}, [roomId]);
+    setEditingMessageId(null);
+    setEditContent("");
+    setActiveMessageId(null);
+    setMessageToDelete(null);
+  }, [roomId]);
   const handleSaveEdit = (messageId: string) => {
     const content = editContent.trim();
 
@@ -253,12 +254,12 @@ export default function MessageList({
                       onClick={(e) => e.stopPropagation()}
                       controls
                       preload="metadata"
-                      src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${message.audioUrl}`}
+                      src={`${API_URL}${message.audioUrl}`}
                       className="h-9 w-56 max-w-full"
                     />
                   ) : message.type === "file" && message.fileUrl ? (
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${message.fileUrl}`}
+                      href={`${API_URL}${message.fileUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download={message.fileName ?? true}
