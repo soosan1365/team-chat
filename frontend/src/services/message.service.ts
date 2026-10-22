@@ -1,28 +1,7 @@
 // مسئول گرفتن تاریخچه پیام‌ها و ارسال پیام به بک‌اند
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api`;
-export type Message = {
-  id: string;
-  content: string;
-  userId: string;
-  roomId: string;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string | null;
-  };
-  replyTo: {
-    id: string;
-    content: string;
-    user: {
-      id: string;
-      name: string | null;
-    };
-  } | null;
-  type: string;
-  audioUrl: string | null;
-  fileUrl: string | null;
-  fileName: string | null;
-};
+import type { Message } from "@/src/types/message";
+
 
 async function parseResponse<T>(response: Response): Promise<T> {
   const data = await response.json().catch(() => null);
