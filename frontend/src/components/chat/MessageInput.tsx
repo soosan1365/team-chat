@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useUploadAttachment } from "@/src/hooks/useUploadAttachment";
 import { useAudioRecording } from "@/src/hooks/useAudioRecording";
 import { useSendMessage } from "@/src/hooks/useSendMessage";
+import EmojiPicker from "./EmojiPicker";
 type ReplyMessage = {
   id: string;
   content: string;
@@ -217,36 +218,13 @@ export default function MessageInput({
         >
           <Smile className="h-5 w-5" />
         </Button>
-
         {showEmojis && isMember && (
-          <div className="absolute bottom-14 right-12 z-50 flex max-w-64 flex-wrap gap-2 rounded-xl border border-white/10 bg-[#191C24] p-3">
-            {[
-              "😀",
-              "😂",
-              "😍",
-              "🥰",
-              "😊",
-              "👍",
-              "❤️",
-              "🎉",
-              "🔥",
-              "😭",
-              "🙏",
-              "👏",
-            ].map((emoji) => (
-              <button
-                key={emoji}
-                type="button"
-                onClick={() => {
-                  setMessage((previous) => previous + emoji);
-                  setShowEmojis(false);
-                }}
-                className="rounded p-1 text-xl hover:bg-white/10"
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
+          <EmojiPicker
+            onSelect={(emoji) => {
+              setMessage((previous) => previous + emoji);
+              setShowEmojis(false);
+            }}
+          />
         )}
 
         <Button
