@@ -4,8 +4,8 @@ import { Paperclip, Smile, Send, Mic, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createMessage } from "@/src/services/message.service";
-import { uploadAudioMessage } from "@/src/services/audio.service";
 import { useUploadAttachment } from "@/src/hooks/useUploadAttachment";
+import { useAudioRecording } from "@/src/hooks/useAudioRecording";
 type ReplyMessage = {
   id: string;
   content: string;
@@ -26,23 +26,33 @@ export default function MessageInput({
   onCancelReply,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null,
-  );
-  const [isUploading, setIsUploading] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const isDisabled = !isMember || isUploading;
+  const {
+    isRecording,
+    mediaRecorder,
+    isUploading,
+    startRecording,
+    stopRecording,
+  } = useAudioRecording();
+  const isDisabled = !isMember || isUploading || isSendingMessage;
   const uploadAttachmentMutation = useUploadAttachment(roomId);
-  function handleRecording() {
-    if (!isMember || isUploading) return;
 
+  function handleRecording() {
+if (
+  !isMember ||
+  isUploading ||
+  isSendingMessage ||
+  uploadAttachmentMutation.isPending
+) {
+  return;
+}
     if (isRecording && mediaRecorder) {
-      mediaRecorder.stop();
-      setIsRecording(false);
+      stopRecording();
       return;
     }
 
@@ -50,66 +60,16 @@ export default function MessageInput({
       URL.revokeObjectURL(audioUrl);
       setAudioUrl(null);
     }
-
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        const recorder = new MediaRecorder(stream);
-        const chunks: Blob[] = [];
-
-        recorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            chunks.push(event.data);
-          }
-        };
-
-        recorder.onstop = async () => {
-          const blob = new Blob(chunks, {
-            type: recorder.mimeType || "audio/webm",
-          });
-
-          stream.getTracks().forEach((track) => track.stop());
-          setMediaRecorder(null);
-          setIsRecording(false);
-
-          try {
-            setIsUploading(true);
-            await uploadAudioMessage(roomId, blob);
-          } catch (error) {
-            console.error("Failed to send audio:", error);
-            alert("Failed to send audio message.");
-          } finally {
-            setIsUploading(false);
-          }
-        };
-
-        recorder.start();
-        setMediaRecorder(recorder);
-        setIsRecording(true);
-      })
-      .catch((error) => {
-        console.error("Microphone access failed:", error);
-        alert("Please allow microphone access to record audio.");
-      });
-  }
-
-  async function handleSendAudio() {
-    if (!isMember || isUploading) return;
-
-    if (isRecording && mediaRecorder) {
-      mediaRecorder.stop();
-      setIsRecording(false);
-    }
+    startRecording(roomId);
   }
 
   async function handleSend() {
-    if (!isMember || isUploading) return;
-
+    if (!isMember || isUploading || isSendingMessage) return;
     const content = message.trim();
     if (!content) return;
 
     try {
-      setIsUploading(true);
+      setIsSendingMessage(true);
       await createMessage({
         content,
         roomId,
@@ -121,7 +81,7 @@ export default function MessageInput({
     } catch (error) {
       console.error("Failed to send message:", error);
     } finally {
-      setIsUploading(false);
+      setIsSendingMessage(false);
     }
   }
 
@@ -151,8 +111,8 @@ export default function MessageInput({
       return;
     }
 
-    if (isRecording) {
-      await handleSendAudio();
+    if (isRecording && mediaRecorder) {
+      stopRecording();
     } else {
       await handleSend();
     }

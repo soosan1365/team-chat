@@ -14,9 +14,8 @@ export default function ChatWindow({
   selectedRoomId,
   currentUserId,
 }: ChatWindowProps) {
-  const { isMember, replyingTo, setReplyingTo } =
-    useChatWindow(selectedRoomId);
-
+  const { isMember, replyingTo, setReplyingTo } = useChatWindow(selectedRoomId);
+  const handleCancelReply = () => setReplyingTo(null);
   if (!selectedRoomId) {
     return (
       <section className="flex h-full min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-xl border border-[#293B55] bg-[#0B1424] px-4 sm:rounded-2xl sm:px-6">
@@ -65,7 +64,7 @@ export default function ChatWindow({
           roomId={selectedRoomId}
           isMember={isMember}
           replyingTo={replyingTo}
-          onCancelReply={() => setReplyingTo(null)}
+          onCancelReply={handleCancelReply}
         />
       </div>
     </section>
