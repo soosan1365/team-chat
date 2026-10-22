@@ -24,13 +24,7 @@ export default function Navbar() {
     }
   }
 
-  const initials =
-    user?.name
-      ?.split(" ")
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase() || "U";
+ 
 
   return (
     <header className="relative z-20 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-700/70 bg-[#0D1726] px-3 shadow-[0_4px_24px_rgba(0,0,0,0.18)] sm:px-6">

@@ -1,18 +1,11 @@
 "use client";
 import { useState } from "react";
-import {
-  Plus,
-  Users,
-  UsersRound,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { UsersRound, ChevronDown, ChevronRight, Network } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useRooms } from "@/src/hooks/rooms/useRooms";
 import { useJoinRoom } from "@/src/hooks/rooms/useJoinRoom";
 import { useLeaveRoom } from "@/src/hooks/rooms/useLeaveRoom";
-import { Network } from "lucide-react";
 import LeaveRoomDialog from "../dialogs/LeaveRoomDialog";
 type SidebarProps = {
   selectedRoomId: string | null;
@@ -31,9 +24,20 @@ export default function Sidebar({
     id: string;
     name: string;
   } | null>(null);
+  function handleConfirmLeave() {
+    if (!roomToLeave) return;
+
+    leaveRoomMutation.mutate(roomToLeave.id, {
+      onSuccess: () => {
+        if (selectedRoomId === roomToLeave.id) {
+          onSelectRoom(null);
+        }
+        setRoomToLeave(null);
+      },
+    });
+  }
   return (
     <aside className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-r border-[#293B55] bg-[#02050a] md:w-[320px] md:shrink-0">
-      {" "}
       {/* Sidebar Header */}
       <div className="shrink-0 border-b border-[#293B55] px-3 py-2 sm:px-5 sm:py-3">
         <div className="flex items-center justify-between">
@@ -100,7 +104,7 @@ export default function Sidebar({
                     <AvatarFallback
                       className={`rounded-lg border-0 shadow-none transition-colors ${
                         isSelected
-                          ? "bg-teal-200/  text-teal-200"
+                          ? "bg-teal-200/15 text-teal-200"
                           : "bg-teal-300/15 text-teal-300 group-hover:bg-teal-300/10"
                       }`}
                     >
@@ -204,7 +208,7 @@ export default function Sidebar({
       </div>
       {/* Workspace Footer */}
       <div className="mt-auto hidden md:block  shrink-0 border-t border-slate-700/60 p-2 sm:p-3">
-        <div className="flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-900/ p-2">
+        <div className="flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-900/70  p-2">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-300/15 bg-teal-300/10 text-teal-200">
             <Network className="h-5 w-5" />{" "}
           </div>
@@ -228,18 +232,7 @@ export default function Sidebar({
             setRoomToLeave(null);
           }
         }}
-        onConfirm={() => {
-          if (!roomToLeave) return;
-
-          leaveRoomMutation.mutate(roomToLeave.id, {
-            onSuccess: () => {
-              if (selectedRoomId === roomToLeave.id) {
-                onSelectRoom(null);
-              }
-              setRoomToLeave(null);
-            },
-          });
-        }}
+        onConfirm={handleConfirmLeave}
       />
     </aside>
   );
