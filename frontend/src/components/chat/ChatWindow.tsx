@@ -1,8 +1,8 @@
 "use client";
 
 import ChatHeader from "./ChatHeader";
-import MessageList from "./MessageList";
-import MessageInput from "./MessageInput";
+import MessageList from "../message/MessageList";
+import MessageInput from "../input/MessageInput";
 import { useChatWindow } from "@/src/hooks/chat/useChatWindow";
 
 type ChatWindowProps = {

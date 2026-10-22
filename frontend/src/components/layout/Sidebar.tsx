@@ -13,7 +13,7 @@ import { useRooms } from "@/src/hooks/rooms/useRooms";
 import { useJoinRoom } from "@/src/hooks/rooms/useJoinRoom";
 import { useLeaveRoom } from "@/src/hooks/rooms/useLeaveRoom";
 import { Network } from "lucide-react";
-import LeaveRoomDialog from "../chat/LeaveRoomDialog";
+import LeaveRoomDialog from "../dialogs/LeaveRoomDialog";
 type SidebarProps = {
   selectedRoomId: string | null;
   onSelectRoom: (roomId: string | null) => void;
