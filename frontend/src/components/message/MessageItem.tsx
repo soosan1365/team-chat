@@ -1,11 +1,11 @@
-
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Paperclip, Download, CheckCheck } from "lucide-react";
 import { API_URL } from "@/src/lib/config";
 import MessageActions from "./MessageActions";
-import type { Message } from "@/src/types/message";
+import type { Message } from "@/src/types/messages";
+import type { ReplyMessage } from "@/src/types/messages";
 
 type MessageItemProps = {
   message: Message;
@@ -17,11 +17,7 @@ type MessageItemProps = {
   editContent: string;
   setEditContent: (content: string) => void;
   isSaving: boolean;
-  onReply: (reply: {
-    id: string;
-    content: string;
-    senderName: string;
-  }) => void;
+  onReply: (reply: ReplyMessage) => void;
   onSaveEdit: (messageId: string) => void;
   onDelete: (messageId: string) => void;
 };
@@ -195,9 +191,7 @@ export default function MessageItem({
             })}
           </span>
 
-          {isMe && (
-            <CheckCheck className="h-3.5 w-3.5 text-violet-400" />
-          )}
+          {isMe && <CheckCheck className="h-3.5 w-3.5 text-violet-400" />}
         </div>
       </div>
 

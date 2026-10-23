@@ -21,3 +21,19 @@ export type Message = {
   fileUrl: string | null;
   fileName: string | null;
 };
+export type UploadAttachmentResponse = {
+  fileUrl: string;
+  fileName: string;
+};
+
+export type UploadAudioResponse = Message;
+export type ReplyMessage = {
+  id: string;
+  content: string;
+  senderName: string;
+};
+export type EditMessageParams = {
+  roomId: string;
+  messageId: string;
+  content: string;
+};

@@ -8,11 +8,7 @@ import { useSendMessage } from "@/src/hooks/messages/useSendMessage";
 import EmojiPicker from "./EmojiPicker";
 import { useUploadAttachment } from "@/src/hooks/messages/useUploadAttachment";
 import { useUploadAudio } from "@/src/hooks/messages/useUploadAudio";
-type ReplyMessage = {
-  id: string;
-  content: string;
-  senderName: string;
-};
+import type { ReplyMessage } from "@/src/types/messages";
 
 type MessageInputProps = {
   roomId: string;

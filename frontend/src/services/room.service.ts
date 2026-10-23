@@ -1,5 +1,4 @@
-import { Room } from "../types/room";
-
+import type { Room } from "../types/rooms";
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api`;
 export async function getRooms(): Promise<Room[]> {
   const response = await fetch(`${API_URL}/rooms`, {

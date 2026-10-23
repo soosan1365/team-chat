@@ -10,12 +10,12 @@ import { useDeleteMessage } from "@/src/hooks/messages/useDeleteMessage";
 import DeleteMessageDialog from "../dialogs/DeleteMessageDialog";
 import { useEditMessage } from "@/src/hooks/messages/useEditMessage";
 import MessageItem from "./MessageItem";
+import type { ReplyMessage } from "@/src/types/messages";
 
 type MessageListProps = {
   roomId: string;
   userId: string;
-  onReply: (reply: { id: string; content: string; senderName: string }) => void;
-};
+onReply: (reply: ReplyMessage) => void;};
 
 export default function MessageList({
   roomId,

@@ -1,7 +1,6 @@
 
 import { parseResponse } from "@/src/services/api";
-import { UploadAudioResponse } from "../types/attachment";
-
+import type { UploadAudioResponse } from "@/src/types/messages";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 

@@ -1,6 +1,6 @@
 // مسئول گرفتن تاریخچه پیام‌ها و ارسال پیام به بک‌اند
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}/api`;
-import type { Message } from "@/src/types/message";
+import type { Message } from "@/src/types/messages";
 import { parseResponse } from "@/src/services/api";
 
 export async function getRoomMessages(roomId: string): Promise<Message[]> {

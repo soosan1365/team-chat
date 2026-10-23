@@ -1,12 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateMessage } from "@/src/services/message.service";
-import type { Message } from "@/src/types/message";
-type EditMessageParams = {
-  roomId: string;
-  messageId: string;
-  content: string;
-};
-
+import type { Message } from "@/src/types/messages";
+import type { EditMessageParams } from "@/src/types/messages";
 export function useEditMessage() {
   const queryClient = useQueryClient();
 

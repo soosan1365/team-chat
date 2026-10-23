@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteMessage } from "@/src/services/message.service";
-import type { Message } from "@/src/types/message";
+import type { Message } from "@/src/types/messages";
 export function useDeleteMessage() {
   const queryClient = useQueryClient();
 
