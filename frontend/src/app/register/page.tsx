@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, UserRound, Mail, LockKeyhole } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +10,6 @@ import { useRegister } from "@/src/hooks/auth/useRegister";
 
 export default function RegisterPage() {
   const registerMutation = useRegister();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

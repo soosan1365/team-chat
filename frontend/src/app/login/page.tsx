@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageCircle, LockKeyhole, Mail } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +12,6 @@ import { useLogin } from "@/src/hooks/auth/useLogin";
 export default function LoginPage() {
   const router = useRouter();
   const loginMutation = useLogin();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,7 +19,6 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-
     try {
       await loginMutation.mutateAsync({
         email,
@@ -40,7 +37,6 @@ export default function LoginPage() {
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0B0D12] px-4 py-10 text-white">
       <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-violet-600/10 blur-[100px]" />
       <div className="pointer-events-none absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-violet-600/10 blur-[100px]" />
-
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-300 to-cyan-500 shadow-lg shadow-teal-500/20 transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-105 sm:h-10 sm:w-10">
@@ -50,7 +46,6 @@ export default function LoginPage() {
             Team<span className="text-teal-300">Flow</span>
           </h1>
         </div>
-
         <section className="rounded-2xl border border-white/10 bg-[#11131B]/95 p-7 shadow-2xl shadow-black/30 sm:p-9">
           <div className="mb-8 space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -60,7 +55,6 @@ export default function LoginPage() {
               Sign in to continue your conversations with your team.
             </p>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-300">
@@ -80,7 +74,6 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-300">
                 Password
@@ -99,7 +92,6 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-
             {error && (
               <p
                 role="alert"
@@ -108,7 +100,6 @@ export default function LoginPage() {
                 {error}
               </p>
             )}
-
             <Button
               type="submit"
               disabled={loginMutation.isPending}

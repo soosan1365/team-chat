@@ -15,7 +15,8 @@ import type { ReplyMessage } from "@/src/types/messages";
 type MessageListProps = {
   roomId: string;
   userId: string;
-onReply: (reply: ReplyMessage) => void;};
+  onReply: (reply: ReplyMessage) => void;
+};
 
 export default function MessageList({
   roomId,
@@ -57,12 +58,6 @@ export default function MessageList({
     });
   }, [isLoading, isLoadingRooms, isMember, messages]);
 
-  useEffect(() => {
-    setEditingMessageId(null);
-    setEditContent("");
-    setActiveMessageId(null);
-    setMessageToDelete(null);
-  }, [roomId]);
   const handleSaveEdit = (messageId: string) => {
     const content = editContent.trim();
 

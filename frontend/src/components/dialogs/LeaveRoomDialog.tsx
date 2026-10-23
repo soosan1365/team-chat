@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -11,8 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-import { Button } from "@/components/ui/button";
 
 type LeaveRoomDialogProps = {
   roomName: string;
@@ -34,10 +31,9 @@ export default function LeaveRoomDialog({
       <AlertDialogContent className="border-slate-700 bg-[#111827] text-white border-2 border-b-teal-300">
         <AlertDialogHeader>
           <AlertDialogTitle>Leave this group?</AlertDialogTitle>
-
           <AlertDialogDescription>
-            Are you sure you want to leave "{roomName}"?
-            You can join the group again later.
+            Are you sure you want to leave &quot;{roomName}&quot;? You can join
+            the group again later.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
