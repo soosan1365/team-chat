@@ -29,8 +29,7 @@ export default function ChatPageClient() {
       <div className="mt-2 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden sm:mt-3 sm:gap-3 md:flex-row md:gap-0">
         {/* Sidebar */}
 
-        <div className="flex h-[62%] min-h-0 w-full shrink-0 overflow-hidden rounded-xl md:h-full md:w-[320px] md:rounded-none">
-          <Sidebar
+<div className="flex h-[35%] min-h-0 w-full shrink-0 overflow-hidden rounded-xl md:h-full md:w-[320px] md:rounded-none">          <Sidebar
             selectedRoomId={selectedRoomId}
             onSelectRoom={handleSelectRoom}
           />
