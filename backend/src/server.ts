@@ -13,7 +13,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "https://team-chat-jz7u.vercel.app"],
+    origin: ["http://localhost:3000", "https://team-chat-soosan.vercel.app"],
     credentials: true,
   },
 });

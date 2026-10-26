@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://team-chat-jz7u.vercel.app",
+      "https://team-chat-soosan.vercel.app",
     
     ],
     credentials: true,
